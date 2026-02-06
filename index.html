@@ -241,12 +241,12 @@
         <div id="login-screen" class="screen active min-h-screen flex flex-col items-center justify-center p-6">
             <div class="flex justify-between w-full max-w-md mb-8">
                 <div
-                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter">
-                    <span class="text-3xl">⚖️</span>
+                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter overflow-hidden">
+                    <img src="logo-left.png" alt="شعار المؤسسة" class="w-16 h-16 object-contain">
                 </div>
                 <div
-                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter">
-                    <span class="text-3xl">🏛️</span>
+                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter overflow-hidden">
+                    <img src="logo-right.png" alt="شعار العدالة" class="w-16 h-16 object-contain">
                 </div>
             </div>
 
@@ -501,9 +501,15 @@
                         التقييم
                     </button>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-gray-400">الحضور:</span>
-                    <span id="attendee-count" class="text-2xl font-bold text-gold">0</span>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-400">الحضور:</span>
+                        <span id="attendee-count" class="text-2xl font-bold text-gold">0</span>
+                    </div>
+                    <button onclick="resetSession()"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition text-sm">
+                        🔄 إعادة الجلسة
+                    </button>
                 </div>
             </div>
         </div>
@@ -738,12 +744,20 @@
             userName = name;
             localStorage.setItem('userName', name);
 
-            await set(ref(db, `users/${userId}`), {
-                name: name,
-                joinedAt: Date.now()
-            });
-
+            // Show wait screen immediately
             showScreen('wait-screen');
+
+            try {
+                await set(ref(db, `users/${userId}`), {
+                    name: name,
+                    joinedAt: Date.now()
+                });
+                console.log('User registered successfully');
+            } catch (error) {
+                console.error('Error registering user:', error);
+            }
+
+            // Start listening to step changes
             listenToStepChanges();
         };
 
@@ -838,6 +852,22 @@
         document.getElementById('admin-password')?.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') checkAdminPassword();
         });
+
+        // Reset Session Function
+        window.resetSession = async function () {
+            if (!confirm('هل أنت متأكد من إعادة تعيين الجلسة؟ سيتم حذف جميع بيانات الحضور!')) return;
+
+            try {
+                // Reset current step to intro
+                await set(ref(db, 'session_state/current_step'), 'intro');
+                // Remove all users
+                await set(ref(db, 'users'), null);
+                alert('تم إعادة تعيين الجلسة بنجاح!');
+            } catch (error) {
+                console.error('Error resetting session:', error);
+                alert('حدث خطأ أثناء إعادة التعيين');
+            }
+        };
 
         // ============================================
         // 🔄 REAL-TIME LISTENERS
