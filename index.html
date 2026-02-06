@@ -766,10 +766,20 @@
         // ============================================
         // 👤 USER FUNCTIONS
         // ============================================
-        window.logoutUser = function () {
+        window.logoutUser = async function () {
             if (!confirm('هل تريد تسجيل الخروج؟')) return;
+
+            try {
+                // Remove user from Firebase
+                if (userId) {
+                    await set(ref(db, `users/${userId}`), null);
+                }
+            } catch (error) {
+                console.error('Error removing user from DB:', error);
+            }
+
             localStorage.removeItem('userName');
-            localStorage.removeItem('userId'); // Optional: reset ID to create new user
+            localStorage.removeItem('userId');
             location.reload();
         };
 
