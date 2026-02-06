@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المرافق القضائي الذكي</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { dark: '#0f172a', light: '#1e293b', lighter: '#334155' },
+                        gold: { DEFAULT: '#fbbf24', hover: '#f59e0b', light: '#fcd34d' }
+                    },
+                    fontFamily: { cairo: ['Cairo', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+        }
+
+        /* Animations */
+        @keyframes pulse-gold {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 15px rgba(251, 191, 36, 0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .pop {
+            animation: pop 0.4s ease-out forwards;
+        }
+
+        /* Custom Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        input[type="range"]::-webkit-slider-track {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #fbbf24;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+
+        /* Card Glow */
+        .card-glow {
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.1);
+            transition: all 0.3s;
+        }
+
+        .card-glow:hover {
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Screen transitions */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        /* Group buttons */
+        .group-btn {
+            transition: all 0.3s;
+            transform: scale(1);
+        }
+
+        .group-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .group-btn.selected {
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+
+        /* Name Grid */
+        .name-card {
+            animation: pop 0.4s ease-out forwards;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        /* Gauge */
+        .gauge-container {
+            position: relative;
+            width: 150px;
+            height: 75px;
+            overflow: hidden;
+        }
+
+        .gauge-bg {
+            width: 150px;
+            height: 75px;
+            border-radius: 75px 75px 0 0;
+            background: #334155;
+        }
+
+        .gauge-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 150px;
+            height: 75px;
+            border-radius: 75px 75px 0 0;
+            background: linear-gradient(90deg, #ef4444, #fbbf24, #22c55e);
+            transform-origin: center bottom;
+        }
+
+        .gauge-mask {
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            width: 130px;
+            height: 65px;
+            border-radius: 65px 65px 0 0;
+            background: #1e293b;
+        }
+
+        .gauge-needle {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 60px;
+            background: white;
+            transform-origin: bottom center;
+            border-radius: 2px;
+            transition: transform 0.5s ease-out;
+        }
+
+        .gauge-value {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+    </style>
+</head>
+
+<body class="text-white">
+    <!-- ==================== USER VIEW ==================== -->
+    <div id="user-view" class="hidden">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active min-h-screen flex flex-col items-center justify-center p-6">
+            <div class="flex justify-between w-full max-w-md mb-8">
+                <div
+                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter">
+                    <span class="text-3xl">⚖️</span>
+                </div>
+                <div
+                    class="w-20 h-20 bg-navy-light rounded-xl flex items-center justify-center border border-navy-lighter">
+                    <span class="text-3xl">🏛️</span>
+                </div>
+            </div>
+
+            <div class="bg-navy-light p-8 rounded-2xl w-full max-w-md card-glow border border-navy-lighter">
+                <h1 class="text-2xl font-bold text-center mb-2 text-gold">المرافق القضائي الذكي</h1>
+                <p class="text-gray-400 text-center mb-6">أدخل اسمك للانضمام للجلسة</p>
+
+                <input type="text" id="user-name" placeholder="الاسم الكامل"
+                    class="w-full p-4 bg-navy-dark border border-navy-lighter rounded-xl text-white placeholder-gray-500 focus:border-gold focus:outline-none mb-4">
+
+                <button id="join-btn" onclick="joinSession()"
+                    class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition-all pulse-gold">
+                    انضم للجلسة
+                </button>
+            </div>
+
+            <!-- Admin Access Button -->
+            <button onclick="showAdminLogin()" class="mt-6 text-gray-500 hover:text-gold text-sm transition">
+                🔐 دخول المُحاضر
+            </button>
+        </div>
+
+        <!-- Admin Password Modal -->
+        <div id="admin-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div class="bg-navy-light p-6 rounded-2xl w-full max-w-sm border border-navy-lighter">
+                <h3 class="text-xl font-bold text-gold mb-4 text-center">🔐 دخول المُحاضر</h3>
+                <input type="password" id="admin-password" placeholder="كلمة المرور"
+                    class="w-full p-4 bg-navy-dark border border-navy-lighter rounded-xl text-white placeholder-gray-500 focus:border-gold focus:outline-none mb-4">
+                <div id="admin-error" class="hidden text-red-500 text-sm mb-3 text-center">كلمة المرور غير صحيحة</div>
+                <div class="flex gap-3">
+                    <button onclick="hideAdminLogin()"
+                        class="flex-1 p-3 bg-navy-dark hover:bg-navy-lighter rounded-xl transition">
+                        إلغاء
+                    </button>
+                    <button onclick="checkAdminPassword()"
+                        class="flex-1 p-3 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                        دخول
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wait Screen -->
+        <div id="wait-screen" class="screen min-h-screen flex flex-col items-center justify-center p-6">
+            <div class="float">
+                <div class="w-24 h-24 bg-gold rounded-full flex items-center justify-center mb-6">
+                    <span class="text-4xl">⏳</span>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">في انتظار المُحاضر...</h2>
+            <p class="text-gray-400">سيتم توجيهك تلقائياً عند بدء النشاط</p>
+            <div class="mt-8 flex gap-2">
+                <div class="w-3 h-3 bg-gold rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                <div class="w-3 h-3 bg-gold rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-3 h-3 bg-gold rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+            </div>
+        </div>
+
+        <!-- Screen A: Knowledge Gap -->
+        <div id="knowledge-screen" class="screen min-h-screen p-6">
+            <div class="max-w-lg mx-auto">
+                <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter mb-6">
+                    <h2 class="text-xl font-bold text-gold mb-4">🧠 الفجوة المعرفية</h2>
+
+                    <div class="mb-6">
+                        <p class="mb-3 font-semibold">أي من هذه الأدوات استخدمتها؟</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="ChatGPT" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>ChatGPT</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="Gemini" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>Gemini</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="Copilot" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>Copilot</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="Perplexity" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>Perplexity</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition col-span-2">
+                                <input type="checkbox" value="None" class="tool-checkbox w-5 h-5 accent-gold"
+                                    id="none-checkbox">
+                                <span>لم أستخدم أياً منها</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="mb-3 font-semibold">ما مستوى كفاءتك في استخدام الذكاء الاصطناعي؟</p>
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <input type="range" id="proficiency-slider" min="0" max="100" value="50"
+                                class="w-full mb-2">
+                            <div class="flex justify-between text-sm text-gray-400">
+                                <span>مبتدئ</span>
+                                <span id="proficiency-value" class="text-gold font-bold">50%</span>
+                                <span>خبير</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="submitKnowledge()"
+                        class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                        إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen B: Group Selection -->
+        <div id="groups-screen" class="screen min-h-screen p-6 flex items-center justify-center">
+            <div class="max-w-lg w-full">
+                <h2 class="text-2xl font-bold text-center text-gold mb-6">🎯 اختر مجموعتك</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="selectGroup('A')"
+                        class="group-btn p-8 bg-red-600 hover:bg-red-500 rounded-2xl text-2xl font-bold transition">
+                        المجموعة أ
+                    </button>
+                    <button onclick="selectGroup('B')"
+                        class="group-btn p-8 bg-blue-600 hover:bg-blue-500 rounded-2xl text-2xl font-bold transition">
+                        المجموعة ب
+                    </button>
+                    <button onclick="selectGroup('C')"
+                        class="group-btn p-8 bg-green-600 hover:bg-green-500 rounded-2xl text-2xl font-bold transition">
+                        المجموعة ج
+                    </button>
+                    <button onclick="selectGroup('D')"
+                        class="group-btn p-8 bg-gold hover:bg-gold-hover text-navy-dark rounded-2xl text-2xl font-bold transition">
+                        المجموعة د
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen C: Prompt Challenge -->
+        <div id="prompt-screen" class="screen min-h-screen p-6">
+            <div class="max-w-lg mx-auto">
+                <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter">
+                    <h2 class="text-xl font-bold text-gold mb-4">💡 تحدي هندسة الأوامر</h2>
+
+                    <div class="bg-navy-dark p-4 rounded-xl mb-6 border-r-4 border-gold">
+                        <p class="text-gray-300">
+                            <span class="text-gold font-bold">السياق:</span>
+                            لديك حكم من 50 صفحة وتريد تلخيصه باستخدام الذكاء الاصطناعي.
+                        </p>
+                    </div>
+
+                    <p class="mb-4 font-semibold">أي أمر (Prompt) هو الأفضل؟</p>
+
+                    <div class="space-y-3 mb-6">
+                        <label
+                            class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                            <input type="radio" name="prompt-option" value="1" class="mt-1 w-5 h-5 accent-gold">
+                            <span>"لخص هذا الملف."</span>
+                        </label>
+                        <label
+                            class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                            <input type="radio" name="prompt-option" value="2" class="mt-1 w-5 h-5 accent-gold">
+                            <span>"لخص الملف مع التركيز على الأسباب القانونية."</span>
+                        </label>
+                        <label
+                            class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                            <input type="radio" name="prompt-option" value="3" class="mt-1 w-5 h-5 accent-gold">
+                            <span>"تصرف كباحث في محكمة النقض. استخرج الجدول الزمني، والدفوع القانونية، والحكم النهائي من
+                                النص المرفق في شكل جدول."</span>
+                        </label>
+                    </div>
+
+                    <button onclick="submitVote()"
+                        class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                        صوّت
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen D: Feedback -->
+        <div id="feedback-screen" class="screen min-h-screen p-6 flex items-center justify-center">
+            <div class="max-w-lg w-full">
+                <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter">
+                    <h2 class="text-xl font-bold text-gold mb-6 text-center">⭐ تقييمك للجلسة</h2>
+
+                    <div class="text-center mb-6">
+                        <div id="feedback-emoji" class="text-6xl mb-2">😐</div>
+                        <p id="feedback-label" class="text-xl font-bold text-gold">معلومات كنت أعرفها</p>
+                    </div>
+
+                    <div class="bg-navy-dark p-4 rounded-xl mb-6">
+                        <input type="range" id="feedback-slider" min="0" max="100" value="50" class="w-full"
+                            oninput="updateFeedbackLabel()">
+                        <div class="flex justify-between text-sm text-gray-400 mt-2">
+                            <span>0</span>
+                            <span id="feedback-value" class="text-gold font-bold">50</span>
+                            <span>100</span>
+                        </div>
+                    </div>
+
+                    <button onclick="submitFeedback()"
+                        class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                        إرسال التقييم
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thank You Screen -->
+        <div id="thanks-screen" class="screen min-h-screen flex flex-col items-center justify-center p-6">
+            <div class="text-6xl mb-6">🙏</div>
+            <h2 class="text-3xl font-bold text-gold mb-2">شكراً لك!</h2>
+            <p class="text-gray-400 text-center">نقدّر مشاركتك في هذه الجلسة التدريبية</p>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN VIEW ==================== -->
+    <div id="admin-view" class="hidden min-h-screen p-4 lg:p-8">
+        <!-- Control Panel -->
+        <div class="bg-navy-light p-4 rounded-2xl mb-6 border border-navy-lighter">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <h1 class="text-xl font-bold text-gold">🎛️ لوحة التحكم</h1>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setStep('intro')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="intro">
+                        المقدمة
+                    </button>
+                    <button onclick="setStep('knowledge')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="knowledge">
+                        الفجوة المعرفية
+                    </button>
+                    <button onclick="setStep('groups')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="groups">
+                        المجموعات
+                    </button>
+                    <button onclick="setStep('prompt')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="prompt">
+                        تحدي Prompt
+                    </button>
+                    <button onclick="setStep('feedback')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="feedback">
+                        التقييم
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-400">الحضور:</span>
+                    <span id="attendee-count" class="text-2xl font-bold text-gold">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Screens -->
+        <!-- Intro View: Names Grid -->
+        <div id="admin-intro" class="admin-screen">
+            <h2 class="text-2xl font-bold text-gold mb-4">👥 الحضور</h2>
+            <div id="names-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                <!-- Names will be added here -->
+            </div>
+        </div>
+
+        <!-- Knowledge View: Charts -->
+        <div id="admin-knowledge" class="admin-screen hidden">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Tools Chart -->
+                <div class="bg-navy-light p-6 rounded-2xl border border-navy-lighter lg:col-span-2">
+                    <h3 class="text-lg font-bold text-gold mb-4">📊 استخدام الأدوات</h3>
+                    <div class="chart-container h-64">
+                        <canvas id="tools-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Proficiency Gauge -->
+                <div
+                    class="bg-navy-light p-6 rounded-2xl border border-navy-lighter flex flex-col items-center justify-center">
+                    <h3 class="text-lg font-bold text-gold mb-4">📈 متوسط الكفاءة</h3>
+                    <div class="gauge-container">
+                        <div class="gauge-bg"></div>
+                        <div class="gauge-fill"></div>
+                        <div class="gauge-mask"></div>
+                        <div id="proficiency-needle" class="gauge-needle" style="transform: rotate(-90deg);"></div>
+                    </div>
+                    <div id="avg-proficiency" class="text-3xl font-bold text-gold mt-4">0%</div>
+                </div>
+            </div>
+
+            <!-- Top Responders -->
+            <div class="bg-navy-light p-6 rounded-2xl border border-navy-lighter mt-6">
+                <h3 class="text-lg font-bold text-gold mb-4">🏆 أسرع المستجيبين</h3>
+                <div id="top-responders" class="flex flex-wrap gap-3">
+                    <!-- Will be populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups View -->
+        <div id="admin-groups" class="admin-screen hidden">
+            <h2 class="text-2xl font-bold text-gold mb-4">🎯 توزيع المجموعات</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-red-900/30 p-4 rounded-2xl border-2 border-red-600">
+                    <h3 class="text-lg font-bold text-red-400 mb-3">المجموعة أ</h3>
+                    <div id="group-a-list" class="space-y-2"></div>
+                    <div class="mt-4 text-center">
+                        <span class="text-3xl font-bold text-red-400" id="group-a-count">0</span>
+                    </div>
+                </div>
+                <div class="bg-blue-900/30 p-4 rounded-2xl border-2 border-blue-600">
+                    <h3 class="text-lg font-bold text-blue-400 mb-3">المجموعة ب</h3>
+                    <div id="group-b-list" class="space-y-2"></div>
+                    <div class="mt-4 text-center">
+                        <span class="text-3xl font-bold text-blue-400" id="group-b-count">0</span>
+                    </div>
+                </div>
+                <div class="bg-green-900/30 p-4 rounded-2xl border-2 border-green-600">
+                    <h3 class="text-lg font-bold text-green-400 mb-3">المجموعة ج</h3>
+                    <div id="group-c-list" class="space-y-2"></div>
+                    <div class="mt-4 text-center">
+                        <span class="text-3xl font-bold text-green-400" id="group-c-count">0</span>
+                    </div>
+                </div>
+                <div class="bg-yellow-900/30 p-4 rounded-2xl border-2 border-gold">
+                    <h3 class="text-lg font-bold text-gold mb-3">المجموعة د</h3>
+                    <div id="group-d-list" class="space-y-2"></div>
+                    <div class="mt-4 text-center">
+                        <span class="text-3xl font-bold text-gold" id="group-d-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prompt View: Pie Chart -->
+        <div id="admin-prompt" class="admin-screen hidden">
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="bg-navy-light p-6 rounded-2xl border border-navy-lighter">
+                    <h3 class="text-lg font-bold text-gold mb-4">📊 نتائج التصويت</h3>
+                    <div class="chart-container h-80">
+                        <canvas id="votes-chart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-navy-light p-6 rounded-2xl border border-navy-lighter">
+                    <h3 class="text-lg font-bold text-gold mb-4">📝 تحليل الخيارات</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-red-900/30 rounded-xl border border-red-600">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-red-400 font-bold">الخيار 1 (ضعيف)</span>
+                                <span id="vote1-count" class="text-red-400">0</span>
+                            </div>
+                            <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                                <div id="vote1-bar" class="bg-red-500 h-full transition-all" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-yellow-900/30 rounded-xl border border-yellow-600">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-yellow-400 font-bold">الخيار 2 (متوسط)</span>
+                                <span id="vote2-count" class="text-yellow-400">0</span>
+                            </div>
+                            <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                                <div id="vote2-bar" class="bg-yellow-500 h-full transition-all" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-green-900/30 rounded-xl border border-green-600">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-green-400 font-bold">الخيار 3 (قوي) ✓</span>
+                                <span id="vote3-count" class="text-green-400">0</span>
+                            </div>
+                            <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                                <div id="vote3-bar" class="bg-green-500 h-full transition-all" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback View: Gauge -->
+        <div id="admin-feedback" class="admin-screen hidden">
+            <div class="flex flex-col items-center justify-center">
+                <div class="bg-navy-light p-8 rounded-2xl border border-navy-lighter text-center">
+                    <h3 class="text-2xl font-bold text-gold mb-6">⭐ متوسط تقييم الجلسة</h3>
+                    <div class="text-8xl font-bold text-gold mb-4" id="avg-feedback-score">0</div>
+                    <div id="avg-feedback-label" class="text-2xl text-gray-400">في انتظار التقييمات...</div>
+                    <div class="mt-6 text-gray-400">
+                        عدد التقييمات: <span id="feedback-count" class="text-gold font-bold">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FIREBASE & APP LOGIC ==================== -->
+    <script type="module">
+        // ============================================
+        // 🔥 FIREBASE CONFIGURATION
+        // ============================================
+        // ⚠️ استبدل هذه البيانات ببيانات مشروعك على Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, push, onValue, onChildAdded, serverTimestamp, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6dAwm_zs3nfDlHx9Dmp0S7GIe7XnPzcQ",
+            authDomain: "totpapers-45660.firebaseapp.com",
+            databaseURL: "https://totpapers-45660-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "totpapers-45660",
+            storageBucket: "totpapers-45660.firebasestorage.app",
+            messagingSenderId: "772721152546",
+            appId: "1:772721152546:web:96af39e3c5aec37cf8707b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // ============================================
+        // 📱 APP STATE
+        // ============================================
+        let userId = localStorage.getItem('userId') || generateId();
+        let userName = localStorage.getItem('userName') || '';
+        let isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
+        let currentStep = 'intro';
+        let toolsChart = null;
+        let votesChart = null;
+
+        function generateId() {
+            const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('userId', id);
+            return id;
+        }
+
+        // ============================================
+        // 🎨 UI HELPERS
+        // ============================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screen = document.getElementById(screenId);
+            if (screen) screen.classList.add('active');
+        }
+
+        function showAdminScreen(screenId) {
+            document.querySelectorAll('.admin-screen').forEach(s => s.classList.add('hidden'));
+            const screen = document.getElementById(screenId);
+            if (screen) screen.classList.remove('hidden');
+
+            // Update active button
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.classList.remove('bg-gold', 'text-navy-dark');
+                btn.classList.add('bg-navy-dark');
+            });
+            const activeBtn = document.querySelector(`[data-step="${currentStep}"]`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-navy-dark');
+                activeBtn.classList.add('bg-gold', 'text-navy-dark');
+            }
+        }
+
+        function updateFeedbackLabel() {
+            const value = parseInt(document.getElementById('feedback-slider').value);
+            document.getElementById('feedback-value').textContent = value;
+
+            let emoji, label;
+            if (value <= 20) { emoji = '😴'; label = 'مضيعة للوقت'; }
+            else if (value <= 50) { emoji = '😐'; label = 'معلومات كنت أعرفها'; }
+            else if (value <= 80) { emoji = '😊'; label = 'تحديث جيد للمعلومات'; }
+            else { emoji = '🤯'; label = 'معلومات مذهلة!'; }
+
+            document.getElementById('feedback-emoji').textContent = emoji;
+            document.getElementById('feedback-label').textContent = label;
+        }
+
+        // ============================================
+        // 👤 USER FUNCTIONS
+        // ============================================
+        window.joinSession = async function () {
+            const nameInput = document.getElementById('user-name');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            userName = name;
+            localStorage.setItem('userName', name);
+
+            await set(ref(db, `users/${userId}`), {
+                name: name,
+                joinedAt: Date.now()
+            });
+
+            showScreen('wait-screen');
+            listenToStepChanges();
+        };
+
+        window.submitKnowledge = async function () {
+            const tools = [];
+            document.querySelectorAll('.tool-checkbox:checked').forEach(cb => {
+                tools.push(cb.value);
+            });
+            const proficiency = parseInt(document.getElementById('proficiency-slider').value);
+
+            await set(ref(db, `users/${userId}/knowledge`), {
+                tools: tools,
+                proficiency: proficiency,
+                submittedAt: Date.now()
+            });
+
+            showScreen('wait-screen');
+        };
+
+        window.selectGroup = async function (group) {
+            await set(ref(db, `users/${userId}/group`), group);
+
+            document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('selected'));
+            setTimeout(() => showScreen('wait-screen'), 500);
+        };
+
+        window.submitVote = async function () {
+            const selected = document.querySelector('input[name="prompt-option"]:checked');
+            if (!selected) return;
+
+            await set(ref(db, `users/${userId}/promptVote`), parseInt(selected.value));
+            showScreen('wait-screen');
+        };
+
+        window.submitFeedback = async function () {
+            const value = parseInt(document.getElementById('feedback-slider').value);
+            await set(ref(db, `users/${userId}/feedback`), value);
+            showScreen('thanks-screen');
+        };
+
+        // Update proficiency display
+        document.getElementById('proficiency-slider')?.addEventListener('input', function () {
+            document.getElementById('proficiency-value').textContent = this.value + '%';
+        });
+
+        // Handle "None" checkbox
+        document.getElementById('none-checkbox')?.addEventListener('change', function () {
+            if (this.checked) {
+                document.querySelectorAll('.tool-checkbox:not(#none-checkbox)').forEach(cb => cb.checked = false);
+            }
+        });
+        document.querySelectorAll('.tool-checkbox:not(#none-checkbox)').forEach(cb => {
+            cb.addEventListener('change', function () {
+                if (this.checked) {
+                    document.getElementById('none-checkbox').checked = false;
+                }
+            });
+        });
+
+        // ============================================
+        // 🎛️ ADMIN FUNCTIONS
+        // ============================================
+        window.setStep = async function (step) {
+            await set(ref(db, 'session_state/current_step'), step);
+        };
+
+        // Admin Login Modal Functions
+        const ADMIN_PASSWORD = 'a4450422';
+
+        window.showAdminLogin = function () {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-error').classList.add('hidden');
+            document.getElementById('admin-password').focus();
+        };
+
+        window.hideAdminLogin = function () {
+            document.getElementById('admin-modal').classList.add('hidden');
+        };
+
+        window.checkAdminPassword = function () {
+            const password = document.getElementById('admin-password').value;
+            if (password === ADMIN_PASSWORD) {
+                window.location.href = window.location.pathname + '?role=admin';
+            } else {
+                document.getElementById('admin-error').classList.remove('hidden');
+                document.getElementById('admin-password').classList.add('border-red-500');
+            }
+        };
+
+        // Allow Enter key for password submission
+        document.getElementById('admin-password')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkAdminPassword();
+        });
+
+        // ============================================
+        // 🔄 REAL-TIME LISTENERS
+        // ============================================
+        function listenToStepChanges() {
+            onValue(ref(db, 'session_state/current_step'), (snapshot) => {
+                currentStep = snapshot.val() || 'intro';
+
+                if (!isAdmin) {
+                    // Map step to screen
+                    const screenMap = {
+                        'intro': 'wait-screen',
+                        'knowledge': 'knowledge-screen',
+                        'groups': 'groups-screen',
+                        'prompt': 'prompt-screen',
+                        'feedback': 'feedback-screen'
+                    };
+                    showScreen(screenMap[currentStep] || 'wait-screen');
+                } else {
+                    // Admin view
+                    const adminScreenMap = {
+                        'intro': 'admin-intro',
+                        'knowledge': 'admin-knowledge',
+                        'groups': 'admin-groups',
+                        'prompt': 'admin-prompt',
+                        'feedback': 'admin-feedback'
+                    };
+                    showAdminScreen(adminScreenMap[currentStep] || 'admin-intro');
+                }
+            });
+        }
+
+        function listenToUsers() {
+            const usersRef = ref(db, 'users');
+
+            onValue(usersRef, (snapshot) => {
+                const users = snapshot.val() || {};
+                const userList = Object.entries(users).map(([id, data]) => ({ id, ...data }));
+
+                // Update attendee count
+                document.getElementById('attendee-count').textContent = userList.length;
+
+                // Update names grid
+                updateNamesGrid(userList);
+
+                // Update knowledge stats
+                updateKnowledgeStats(userList);
+
+                // Update groups
+                updateGroups(userList);
+
+                // Update votes
+                updateVotes(userList);
+
+                // Update feedback
+                updateFeedback(userList);
+            });
+        }
+
+        function updateNamesGrid(users) {
+            const grid = document.getElementById('names-grid');
+            if (!grid) return;
+
+            grid.innerHTML = users.map((user, i) => `
+                <div class="name-card bg-navy-light p-3 rounded-xl border border-navy-lighter text-center" style="animation-delay: ${i * 0.05}s">
+                    <div class="text-2xl mb-1">👤</div>
+                    <div class="font-semibold truncate">${user.name || 'مجهول'}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateKnowledgeStats(users) {
+            // Calculate tool usage
+            const toolCounts = { ChatGPT: 0, Gemini: 0, Copilot: 0, Perplexity: 0, None: 0 };
+            let totalProficiency = 0;
+            let proficiencyCount = 0;
+            const responders = [];
+
+            users.forEach(user => {
+                if (user.knowledge) {
+                    (user.knowledge.tools || []).forEach(tool => {
+                        if (toolCounts.hasOwnProperty(tool)) toolCounts[tool]++;
+                    });
+                    totalProficiency += user.knowledge.proficiency || 0;
+                    proficiencyCount++;
+                    responders.push({ name: user.name, time: user.knowledge.submittedAt });
+                }
+            });
+
+            // Update tools chart
+            if (toolsChart) {
+                toolsChart.data.datasets[0].data = Object.values(toolCounts);
+                toolsChart.update();
+            }
+
+            // Update proficiency gauge
+            const avgProf = proficiencyCount > 0 ? Math.round(totalProficiency / proficiencyCount) : 0;
+            document.getElementById('avg-proficiency').textContent = avgProf + '%';
+            const needle = document.getElementById('proficiency-needle');
+            if (needle) {
+                const rotation = -90 + (avgProf / 100) * 180;
+                needle.style.transform = `rotate(${rotation}deg)`;
+            }
+
+            // Update top responders
+            const topRespondersEl = document.getElementById('top-responders');
+            if (topRespondersEl) {
+                responders.sort((a, b) => a.time - b.time);
+                topRespondersEl.innerHTML = responders.slice(0, 3).map((r, i) => `
+                    <div class="bg-navy-dark px-4 py-2 rounded-full flex items-center gap-2">
+                        <span class="text-gold">${['🥇', '🥈', '🥉'][i]}</span>
+                        <span>${r.name}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function updateGroups(users) {
+            const groups = { A: [], B: [], C: [], D: [] };
+
+            users.forEach(user => {
+                if (user.group && groups[user.group]) {
+                    groups[user.group].push(user.name);
+                }
+            });
+
+            ['A', 'B', 'C', 'D'].forEach(g => {
+                const list = document.getElementById(`group-${g.toLowerCase()}-list`);
+                const count = document.getElementById(`group-${g.toLowerCase()}-count`);
+                if (list) {
+                    list.innerHTML = groups[g].map(name => `
+                        <div class="bg-navy-dark/50 px-3 py-1 rounded-lg text-sm">${name}</div>
+                    `).join('');
+                }
+                if (count) count.textContent = groups[g].length;
+            });
+        }
+
+        function updateVotes(users) {
+            const votes = { 1: 0, 2: 0, 3: 0 };
+
+            users.forEach(user => {
+                if (user.promptVote) votes[user.promptVote]++;
+            });
+
+            const total = votes[1] + votes[2] + votes[3];
+
+            // Update bars
+            [1, 2, 3].forEach(v => {
+                document.getElementById(`vote${v}-count`).textContent = votes[v];
+                const pct = total > 0 ? (votes[v] / total) * 100 : 0;
+                document.getElementById(`vote${v}-bar`).style.width = pct + '%';
+            });
+
+            // Update pie chart
+            if (votesChart) {
+                votesChart.data.datasets[0].data = [votes[1], votes[2], votes[3]];
+                votesChart.update();
+            }
+        }
+
+        function updateFeedback(users) {
+            let total = 0;
+            let count = 0;
+
+            users.forEach(user => {
+                if (typeof user.feedback === 'number') {
+                    total += user.feedback;
+                    count++;
+                }
+            });
+
+            const avg = count > 0 ? Math.round(total / count) : 0;
+
+            document.getElementById('avg-feedback-score').textContent = avg;
+            document.getElementById('feedback-count').textContent = count;
+
+            let label = 'في انتظار التقييمات...';
+            if (count > 0) {
+                if (avg <= 20) label = '😴 مضيعة للوقت';
+                else if (avg <= 50) label = '😐 معلومات معروفة';
+                else if (avg <= 80) label = '😊 تحديث جيد';
+                else label = '🤯 معلومات مذهلة!';
+            }
+            document.getElementById('avg-feedback-label').textContent = label;
+        }
+
+        // ============================================
+        // 📊 INITIALIZE CHARTS
+        // ============================================
+        function initCharts() {
+            // Tools Bar Chart
+            const toolsCtx = document.getElementById('tools-chart');
+            if (toolsCtx) {
+                toolsChart = new Chart(toolsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['ChatGPT', 'Gemini', 'Copilot', 'Perplexity', 'لا شيء'],
+                        datasets: [{
+                            label: 'عدد المستخدمين',
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#8b5cf6', '#f97316', '#6b7280'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                            x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // Votes Pie Chart
+            const votesCtx = document.getElementById('votes-chart');
+            if (votesCtx) {
+                votesChart = new Chart(votesCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['الخيار 1', 'الخيار 2', 'الخيار 3'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: ['#ef4444', '#eab308', '#22c55e'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8', font: { family: 'Cairo' } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ============================================
+        // 🚀 INITIALIZE APP
+        // ============================================
+        function init() {
+            if (isAdmin) {
+                document.getElementById('admin-view').classList.remove('hidden');
+                initCharts();
+                listenToStepChanges();
+                listenToUsers();
+            } else {
+                document.getElementById('user-view').classList.remove('hidden');
+                // Check if already joined
+                if (userName) {
+                    showScreen('wait-screen');
+                    listenToStepChanges();
+                }
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
