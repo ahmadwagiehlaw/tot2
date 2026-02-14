@@ -113,9 +113,11 @@
         }
 
         input[type="range"]::-webkit-slider-track {
-            height: 8px;
-            background: #334155;
-            border-radius: 4px;
+            height: 12px;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 999px;
+            border: 1px solid #fcd34d;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.35), inset 0 0 0 1px rgba(15, 23, 42, 0.3);
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -125,7 +127,36 @@
             background: #fbbf24;
             border-radius: 50%;
             cursor: pointer;
-            margin-top: -8px;
+            margin-top: -7px;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2);
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 12px;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 999px;
+            border: 1px solid #fcd34d;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #fbbf24;
+            border-radius: 50%;
+            border: 0;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2);
+        }
+
+        @keyframes buzz {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-10deg); }
+            40% { transform: rotate(10deg); }
+            60% { transform: rotate(-8deg); }
+            80% { transform: rotate(8deg); }
+        }
+
+        .buzz {
+            animation: buzz 0.7s ease-in-out infinite;
         }
 
         /* Card Glow */
@@ -262,7 +293,7 @@
 
             <div class="bg-navy-light p-8 rounded-2xl w-full max-w-md card-glow border border-navy-lighter">
                 <h1 class="text-2xl font-bold text-center mb-2 text-gold">المرافق القضائي الذكي</h1>
-                <p class="text-gray-400 text-center mb-6">أدخل اسمك للانضمام للجلسة</p>
+                <p class="text-gray-400 text-center mb-6">إعداد وتقديم : مستشار/أحمد وجيه</p>
 
                 <input type="text" id="user-name" placeholder="الاسم الكامل"
                     class="w-full p-4 bg-navy-dark border border-navy-lighter rounded-xl text-white placeholder-gray-500 focus:border-gold focus:outline-none mb-4">
@@ -348,6 +379,16 @@
                                 <span>Perplexity</span>
                             </label>
                             <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="Grok" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>Grok</span>
+                            </label>
+                            <label
+                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                <input type="checkbox" value="Claude" class="tool-checkbox w-5 h-5 accent-gold">
+                                <span>Claude</span>
+                            </label>
+                            <label
                                 class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition col-span-2">
                                 <input type="checkbox" value="None" class="tool-checkbox w-5 h-5 accent-gold"
                                     id="none-checkbox">
@@ -377,27 +418,116 @@
             </div>
         </div>
 
-        <!-- Screen B: Group Selection -->
+        <!-- Screen B: Digital Skills Matrix -->
+        <div id="skills-screen" class="screen min-h-screen p-6">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter mb-6">
+                    <h2 class="text-xl font-bold text-gold mb-2">مصفوفة الكفاءات الرقمية</h2>
+                    <p class="text-gray-300 mb-6">قيّم نفسك في كل مهارة باستخدام السلايدر</p>
+
+                    <div class="space-y-5">
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <p class="mb-3 font-semibold">البحث المتقدم والخارق السرعة</p>
+                            <input type="range" min="0" max="3" value="1" class="w-full skill-slider"
+                                data-skill="advancedSearch" data-output="advancedSearch-label">
+                            <div class="mt-2 flex justify-between text-sm text-gray-400">
+                                <span>🐢 مبتدئ</span><span id="advancedSearch-label" class="text-gold font-bold">متمكن</span><span>🚀 خبير</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <p class="mb-3 font-semibold">إدارة الملفات والتحويل بينها (OCR + امتدادات)</p>
+                            <input type="range" min="0" max="3" value="1" class="w-full skill-slider"
+                                data-skill="fileOps" data-output="fileOps-label">
+                            <div class="mt-2 flex justify-between text-sm text-gray-400">
+                                <span>🐢 مبتدئ</span><span id="fileOps-label" class="text-gold font-bold">متمكن</span><span>🚀 خبير</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <p class="mb-3 font-semibold">كم من تطبيقات الأوفيس تحترفه</p>
+                            <input type="range" min="0" max="5" value="2" class="w-full skill-slider"
+                                data-skill="officeApps" data-output="officeApps-label" data-scale="office">
+                            <div class="mt-2 flex justify-between text-sm text-gray-400">
+                                <span>لا شيء</span><span id="officeApps-label" class="text-gold font-bold">2</span><span>5</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <p class="mb-3 font-semibold">إنتاجية الذكاء الاصطناعي (كتابة صوتية + تحويل نص/صوت + هندسة الأوامر)</p>
+                            <input type="range" min="0" max="3" value="1" class="w-full skill-slider"
+                                data-skill="aiProductivity" data-output="aiProductivity-label">
+                            <div class="mt-2 flex justify-between text-sm text-gray-400">
+                                <span>🐢 مبتدئ</span><span id="aiProductivity-label" class="text-gold font-bold">متمكن</span><span>🚀 خبير</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-dark p-4 rounded-xl">
+                            <p class="mb-3 font-semibold">الأمن السيبراني وحماية البيانات</p>
+                            <input type="range" min="0" max="3" value="1" class="w-full skill-slider"
+                                data-skill="cybersecurity" data-output="cybersecurity-label">
+                            <div class="mt-2 flex justify-between text-sm text-gray-400">
+                                <span>🐢 مبتدئ</span><span id="cybersecurity-label" class="text-gold font-bold">متمكن</span><span>🚀 خبير</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-sm text-gray-400 mt-4">مقياس التقييم: مبتدئ - متمكن - خبير - لا أعرف</div>
+
+                    <button onclick="submitDigitalSkills()"
+                        class="w-full mt-6 p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                        إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen C: Group Selection -->
         <div id="groups-screen" class="screen min-h-screen p-6 flex items-center justify-center">
             <div class="max-w-lg w-full">
                 <h2 class="text-2xl font-bold text-center text-gold mb-6">🎯 اختر مجموعتك</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="selectGroup('A')"
+                    <button onclick="selectGroup('A')" data-group="A"
                         class="group-btn p-8 bg-red-600 hover:bg-red-500 rounded-2xl text-2xl font-bold transition">
                         المجموعة أ
                     </button>
-                    <button onclick="selectGroup('B')"
+                    <button onclick="selectGroup('B')" data-group="B"
                         class="group-btn p-8 bg-blue-600 hover:bg-blue-500 rounded-2xl text-2xl font-bold transition">
                         المجموعة ب
                     </button>
-                    <button onclick="selectGroup('C')"
+                    <button onclick="selectGroup('C')" data-group="C"
                         class="group-btn p-8 bg-green-600 hover:bg-green-500 rounded-2xl text-2xl font-bold transition">
                         المجموعة ج
                     </button>
-                    <button onclick="selectGroup('D')"
+                    <button onclick="selectGroup('D')" data-group="D"
                         class="group-btn p-8 bg-gold hover:bg-gold-hover text-navy-dark rounded-2xl text-2xl font-bold transition">
                         المجموعة د
                     </button>
+                </div>
+                <button onclick="openWorksheetModal()"
+                    class="w-full mt-4 p-3 bg-navy-light hover:bg-navy-lighter border border-navy-lighter rounded-xl font-bold transition">
+                    عرض ورقة العمل
+                </button>
+                <div id="group-choice-note" class="hidden mt-3 text-center text-sm text-gold">
+                    تم تسجيل اختيارك، يمكنك الآن مراجعة ورقة العمل حتى ينقلك المحاضر للخطوة التالية.
+                </div>
+            </div>
+        </div>
+
+        <div id="worksheet-modal" class="hidden fixed inset-0 bg-black/80 z-50 p-4" onclick="closeWorksheetModal()">
+            <div class="max-w-5xl mx-auto h-full flex flex-col" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between bg-navy-light border border-navy-lighter rounded-t-2xl px-4 py-3">
+                    <h3 class="text-gold font-bold">ورقة العمل</h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="zoomOutWorksheet()" class="px-3 py-1 rounded-lg bg-navy-dark hover:bg-navy-lighter">-</button>
+                        <button onclick="resetWorksheetZoom()" class="px-3 py-1 rounded-lg bg-navy-dark hover:bg-navy-lighter">100%</button>
+                        <button onclick="zoomInWorksheet()" class="px-3 py-1 rounded-lg bg-navy-dark hover:bg-navy-lighter">+</button>
+                        <button onclick="closeWorksheetModal()" class="px-3 py-1 rounded-lg bg-red-600 hover:bg-red-500">إغلاق</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-auto bg-navy-dark border-x border-b border-navy-lighter rounded-b-2xl p-4">
+                    <img id="worksheet-image" src="workgroup.png" alt="ورقة العمل"
+                        class="mx-auto max-w-full h-auto origin-top transition-transform duration-200">
                 </div>
             </div>
         </div>
@@ -479,6 +609,14 @@
             <h2 class="text-3xl font-bold text-gold mb-2">شكراً لك!</h2>
             <p class="text-gray-400 text-center">نقدّر مشاركتك في هذه الجلسة التدريبية</p>
         </div>
+
+        <div id="raise-hand-wrap" class="hidden fixed bottom-4 left-4 z-40">
+            <button id="raise-hand-btn" onclick="toggleRaiseHand()"
+                class="flex items-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-navy-dark font-bold shadow-lg transition">
+                <span id="raise-hand-icon">🙋</span>
+                <span id="raise-hand-label">طلب الكلمة</span>
+            </button>
+        </div>
     </div>
 
     <!-- ==================== ADMIN VIEW ==================== -->
@@ -498,15 +636,20 @@
                         data-step="knowledge">
                         الفجوة المعرفية
                     </button>
-                    <button onclick="setStep('groups')"
+                    <button onclick="setStep('skills')"
                         class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
-                        data-step="groups">
-                        المجموعات
+                        data-step="skills">
+                        مصفوفة الكفاءات
                     </button>
                     <button onclick="setStep('prompt')"
                         class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
                         data-step="prompt">
                         تحدي Prompt
+                    </button>
+                    <button onclick="setStep('groups')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="groups">
+                        المجموعات
                     </button>
                     <button onclick="setStep('feedback')"
                         class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
@@ -524,6 +667,25 @@
                         🔄 إعادة الجلسة
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <div class="bg-navy-light p-4 rounded-2xl mb-6 border border-navy-lighter">
+            <div class="flex items-center justify-between gap-4 mb-3">
+                <div class="flex items-center gap-3">
+                    <span id="raisehand-bell" class="text-2xl">🔔</span>
+                    <h3 class="text-lg font-bold text-gold">طلبات الكلمة</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="raisehand-count" class="px-3 py-1 rounded-full bg-red-600 text-white font-bold">0</span>
+                    <button onclick="clearRaiseHands()"
+                        class="px-3 py-1 bg-navy-dark hover:bg-navy-lighter rounded-lg text-sm transition">
+                        مسح الطلبات
+                    </button>
+                </div>
+            </div>
+            <div id="raisehand-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm text-gray-200">
+                <div class="text-gray-400">لا توجد طلبات حالياً</div>
             </div>
         </div>
 
@@ -566,6 +728,39 @@
                 <h3 class="text-lg font-bold text-gold mb-4">🏆 أسرع المستجيبين</h3>
                 <div id="top-responders" class="flex flex-wrap gap-3">
                     <!-- Will be populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Skills View -->
+        <div id="admin-skills" class="admin-screen hidden">
+            <h2 class="text-2xl font-bold text-gold mb-4">مصفوفة الكفاءات الرقمية</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-navy-light p-5 rounded-2xl border border-navy-lighter">
+                    <p class="text-gray-400 text-sm mb-2">عدد المشاركين</p>
+                    <div id="digital-skills-count" class="text-4xl font-bold text-gold">0</div>
+                </div>
+                <div class="bg-navy-light p-5 rounded-2xl border border-navy-lighter">
+                    <p class="text-gray-400 text-sm mb-2">متوسط الكفاءة</p>
+                    <div id="digital-avg-score" class="text-4xl font-bold text-gold">0%</div>
+                </div>
+                <div class="bg-navy-light p-5 rounded-2xl border border-navy-lighter">
+                    <p class="text-gray-400 text-sm mb-2">أعلى مهارة</p>
+                    <div id="digital-top-skill" class="text-xl font-bold text-white">-</div>
+                </div>
+                <div class="bg-navy-light p-5 rounded-2xl border border-navy-lighter">
+                    <p class="text-gray-400 text-sm mb-2">نسبة لا أعرف</p>
+                    <div id="digital-unknown-rate" class="text-4xl font-bold text-gold">0%</div>
+                </div>
+            </div>
+
+            <div class="bg-navy-light p-5 rounded-2xl border border-navy-lighter mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gold">الخريطة البصرية لكل مشارك</h3>
+                    <span class="text-sm text-gray-400">رادار الكفاءات للمقارنة</span>
+                </div>
+                <div id="digital-skills-profiles" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div class="text-gray-400">لا توجد بيانات كفاءات حتى الآن.</div>
                 </div>
             </div>
         </div>
@@ -716,6 +911,13 @@
         let currentStep = 'intro';
         let toolsChart = null;
         let votesChart = null;
+        let digitalProfileCharts = [];
+        const DIGITAL_SKILL_LABELS = ['مبتدئ', 'متمكن', 'خبير', 'لا أعرف'];
+        const DIGITAL_SKILL_FIELDS = ['advancedSearch', 'fileOps', 'officeApps', 'aiProductivity', 'cybersecurity'];
+        let isHandRaised = false;
+        let lastRaiseHandCount = -1;
+        let worksheetZoom = 1;
+        let alertAudioContext = null;
 
         function generateId() {
             const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -761,6 +963,77 @@
 
             document.getElementById('feedback-emoji').textContent = emoji;
             document.getElementById('feedback-label').textContent = label;
+        }
+
+        function renderRaiseHandState() {
+            const wrap = document.getElementById('raise-hand-wrap');
+            const btn = document.getElementById('raise-hand-btn');
+            const label = document.getElementById('raise-hand-label');
+            const icon = document.getElementById('raise-hand-icon');
+            if (!wrap || !btn || !label || !icon) return;
+
+            if (userName && !isAdmin) wrap.classList.remove('hidden');
+            if (isHandRaised) {
+                label.textContent = 'إلغاء طلب الكلمة';
+                icon.textContent = '🔔';
+                btn.classList.remove('bg-amber-500', 'hover:bg-amber-400', 'text-navy-dark');
+                btn.classList.add('bg-red-500', 'hover:bg-red-400', 'text-white');
+            } else {
+                label.textContent = 'طلب الكلمة';
+                icon.textContent = '🙋';
+                btn.classList.remove('bg-red-500', 'hover:bg-red-400', 'text-white');
+                btn.classList.add('bg-amber-500', 'hover:bg-amber-400', 'text-navy-dark');
+            }
+        }
+
+        function startRaiseHandListener() {
+            if (isAdmin || !userId) return;
+            onValue(ref(db, `users/${userId}/raiseHand/active`), (snapshot) => {
+                isHandRaised = !!snapshot.val();
+                renderRaiseHandState();
+            });
+        }
+
+        function applyWorksheetZoom() {
+            const image = document.getElementById('worksheet-image');
+            if (!image) return;
+            image.style.transform = `scale(${worksheetZoom})`;
+        }
+
+        function playRaiseHandAlert() {
+            try {
+                if (!alertAudioContext) {
+                    const Ctx = window.AudioContext || window.webkitAudioContext;
+                    if (!Ctx) return;
+                    alertAudioContext = new Ctx();
+                }
+                if (alertAudioContext.state === 'suspended') {
+                    alertAudioContext.resume();
+                }
+
+                const now = alertAudioContext.currentTime;
+                const gain = alertAudioContext.createGain();
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+                gain.connect(alertAudioContext.destination);
+
+                const osc1 = alertAudioContext.createOscillator();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(900, now);
+                osc1.connect(gain);
+                osc1.start(now);
+                osc1.stop(now + 0.18);
+
+                const osc2 = alertAudioContext.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1200, now + 0.18);
+                osc2.connect(gain);
+                osc2.start(now + 0.18);
+                osc2.stop(now + 0.35);
+            } catch (error) {
+                console.warn('Audio alert failed:', error);
+            }
         }
 
         // ============================================
@@ -810,6 +1083,8 @@
 
             // Start listening to step changes
             listenToStepChanges();
+            startRaiseHandListener();
+            renderRaiseHandState();
         };
 
         window.submitKnowledge = async function () {
@@ -828,11 +1103,65 @@
             showScreen('wait-screen');
         };
 
+        window.submitDigitalSkills = async function () {
+            const digitalSkills = {};
+            document.querySelectorAll('.skill-slider').forEach(slider => {
+                digitalSkills[slider.dataset.skill] = parseInt(slider.value);
+            });
+            digitalSkills.submittedAt = Date.now();
+
+            await set(ref(db, `users/${userId}/digitalSkills`), digitalSkills);
+            showScreen('wait-screen');
+        };
+
+        window.toggleRaiseHand = async function () {
+            const nextState = !isHandRaised;
+            await set(ref(db, `users/${userId}/raiseHand`), {
+                active: nextState,
+                requestedAt: Date.now()
+            });
+            isHandRaised = nextState;
+            renderRaiseHandState();
+        };
+
+        window.openWorksheetModal = function () {
+            worksheetZoom = 1;
+            applyWorksheetZoom();
+            document.getElementById('worksheet-modal')?.classList.remove('hidden');
+        };
+
+        window.closeWorksheetModal = function () {
+            document.getElementById('worksheet-modal')?.classList.add('hidden');
+        };
+
+        window.zoomInWorksheet = function () {
+            worksheetZoom = Math.min(3, worksheetZoom + 0.2);
+            applyWorksheetZoom();
+        };
+
+        window.zoomOutWorksheet = function () {
+            worksheetZoom = Math.max(0.5, worksheetZoom - 0.2);
+            applyWorksheetZoom();
+        };
+
+        window.resetWorksheetZoom = function () {
+            worksheetZoom = 1;
+            applyWorksheetZoom();
+        };
+
         window.selectGroup = async function (group) {
             await set(ref(db, `users/${userId}/group`), group);
 
-            document.querySelectorAll('.group-btn').forEach(btn => btn.classList.add('selected'));
-            setTimeout(() => showScreen('wait-screen'), 500);
+            document.querySelectorAll('.group-btn').forEach(btn => {
+                const isSelected = btn.dataset.group === group;
+                btn.classList.toggle('selected', isSelected);
+                btn.classList.toggle('ring-4', isSelected);
+                btn.classList.toggle('ring-gold', isSelected);
+                btn.classList.toggle('ring-offset-2', isSelected);
+                btn.classList.toggle('ring-offset-navy-dark', isSelected);
+            });
+
+            document.getElementById('group-choice-note')?.classList.remove('hidden');
         };
 
         window.submitVote = async function () {
@@ -868,11 +1197,33 @@
             });
         });
 
+        document.querySelectorAll('.skill-slider').forEach(slider => {
+            const outputId = slider.dataset.output;
+            const outputEl = document.getElementById(outputId);
+            const updateLabel = () => {
+                const value = parseInt(slider.value);
+                if (slider.dataset.scale === 'office') {
+                    outputEl.textContent = value === 0 ? 'لا شيء' : value.toString();
+                } else {
+                    outputEl.textContent = DIGITAL_SKILL_LABELS[value] || DIGITAL_SKILL_LABELS[0];
+                }
+            };
+            slider.addEventListener('input', updateLabel);
+            updateLabel();
+        });
+
         // ============================================
         // 🎛️ ADMIN FUNCTIONS
         // ============================================
         window.setStep = async function (step) {
             await set(ref(db, 'session_state/current_step'), step);
+        };
+
+        window.clearRaiseHands = async function () {
+            const snapshot = await get(ref(db, 'users'));
+            const users = snapshot.val() || {};
+            const tasks = Object.keys(users).map(uid => set(ref(db, `users/${uid}/raiseHand/active`), false));
+            await Promise.all(tasks);
         };
 
         // Admin Login Modal Functions
@@ -932,6 +1283,7 @@
                     const screenMap = {
                         'intro': 'wait-screen',
                         'knowledge': 'knowledge-screen',
+                        'skills': 'skills-screen',
                         'groups': 'groups-screen',
                         'prompt': 'prompt-screen',
                         'feedback': 'feedback-screen'
@@ -942,6 +1294,7 @@
                     const adminScreenMap = {
                         'intro': 'admin-intro',
                         'knowledge': 'admin-knowledge',
+                        'skills': 'admin-skills',
                         'groups': 'admin-groups',
                         'prompt': 'admin-prompt',
                         'feedback': 'admin-feedback'
@@ -967,6 +1320,9 @@
                 // Update knowledge stats
                 updateKnowledgeStats(userList);
 
+                // Update digital skills stats
+                updateDigitalSkillsStats(userList);
+
                 // Update groups
                 updateGroups(userList);
 
@@ -975,6 +1331,9 @@
 
                 // Update feedback
                 updateFeedback(userList);
+
+                // Update raise hand alerts
+                updateRaiseHandAlerts(userList);
             });
         }
 
@@ -990,9 +1349,47 @@
             `).join('');
         }
 
+        function updateRaiseHandAlerts(users) {
+            const bell = document.getElementById('raisehand-bell');
+            const countEl = document.getElementById('raisehand-count');
+            const listEl = document.getElementById('raisehand-list');
+            if (!bell || !countEl || !listEl) return;
+
+            const requests = users
+                .filter(user => user.raiseHand && user.raiseHand.active)
+                .map(user => ({
+                    name: user.name || 'مشارك',
+                    requestedAt: user.raiseHand.requestedAt || 0
+                }))
+                .sort((a, b) => a.requestedAt - b.requestedAt);
+
+            countEl.textContent = requests.length;
+            bell.classList.toggle('buzz', requests.length > 0);
+            if (lastRaiseHandCount === -1) {
+                lastRaiseHandCount = requests.length;
+            } else if (requests.length > lastRaiseHandCount) {
+                playRaiseHandAlert();
+                lastRaiseHandCount = requests.length;
+            } else {
+                lastRaiseHandCount = requests.length;
+            }
+
+            if (!requests.length) {
+                listEl.innerHTML = '<div class="text-gray-400">لا توجد طلبات حالياً</div>';
+                return;
+            }
+
+            listEl.innerHTML = requests.map((request, index) => `
+                <div class="bg-navy-dark px-3 py-2 rounded-lg border border-navy-lighter flex items-center justify-between">
+                    <span>${request.name}</span>
+                    <span class="text-gold font-bold">#${index + 1}</span>
+                </div>
+            `).join('');
+        }
+
         function updateKnowledgeStats(users) {
             // Calculate tool usage
-            const toolCounts = { ChatGPT: 0, Gemini: 0, Copilot: 0, Perplexity: 0, None: 0 };
+            const toolCounts = { ChatGPT: 0, Gemini: 0, Copilot: 0, Perplexity: 0, Grok: 0, Claude: 0, None: 0 };
             let totalProficiency = 0;
             let proficiencyCount = 0;
             const responders = [];
@@ -1034,6 +1431,181 @@
                     </div>
                 `).join('');
             }
+        }
+
+        function updateDigitalSkillsStats(users) {
+            const counters = {
+                advancedSearch: 0,
+                fileOps: 0,
+                officeApps: 0,
+                aiProductivity: 0,
+                cybersecurity: 0
+            };
+
+            let responders = 0;
+            let totalKnownValues = 0;
+            let knownValueCount = 0;
+            let unknownCount = 0;
+            let totalSkillAnswers = 0;
+
+            users.forEach(user => {
+                if (!user.digitalSkills) return;
+
+                responders++;
+                Object.keys(counters).forEach(key => {
+                    const value = user.digitalSkills[key];
+                    if (typeof value !== 'number') return;
+                    counters[key] += value;
+                    totalSkillAnswers++;
+                    if (key === 'officeApps') {
+                        knownValueCount++;
+                        totalKnownValues += (value / 5) * 100;
+                    } else if (value === 3) {
+                        unknownCount++;
+                    } else {
+                        knownValueCount++;
+                        totalKnownValues += (value / 2) * 100;
+                    }
+                });
+            });
+
+            const avgScore = knownValueCount > 0 ? Math.round(totalKnownValues / knownValueCount) : 0;
+            const unknownRate = totalSkillAnswers > 0 ? Math.round((unknownCount / totalSkillAnswers) * 100) : 0;
+
+            const topSkillEntry = Object.entries(counters).reduce((best, current) => {
+                return current[1] > best[1] ? current : best;
+            }, ['none', -1]);
+
+            const skillNames = {
+                advancedSearch: 'البحث المتقدم',
+                fileOps: 'الملفات و OCR',
+                officeApps: 'الأوفيس',
+                aiProductivity: 'إنتاجية الذكاء الاصطناعي',
+                cybersecurity: 'الأمن السيبراني',
+                none: '-'
+            };
+
+            const countEl = document.getElementById('digital-skills-count');
+            const avgEl = document.getElementById('digital-avg-score');
+            const topEl = document.getElementById('digital-top-skill');
+            const unknownEl = document.getElementById('digital-unknown-rate');
+
+            if (countEl) countEl.textContent = responders;
+            if (avgEl) avgEl.textContent = avgScore + '%';
+            if (topEl) topEl.textContent = responders > 0 ? (skillNames[topSkillEntry[0]] || '-') : '-';
+            if (unknownEl) unknownEl.textContent = unknownRate + '%';
+
+            renderDigitalSkillsProfiles(users);
+        }
+
+        function renderDigitalSkillsProfiles(users) {
+            const container = document.getElementById('digital-skills-profiles');
+            if (!container) return;
+
+            digitalProfileCharts.forEach(chart => chart.destroy());
+            digitalProfileCharts = [];
+
+            const skillLabels = ['البحث', 'الملفات/OCR', 'الأوفيس', 'إنتاجية AI', 'الأمن'];
+            const participants = users
+                .filter(user => user.digitalSkills)
+                .map(user => {
+                    const ds = user.digitalSkills || {};
+                    const toPct = (key, value) => {
+                        if (typeof value !== 'number') return 0;
+                        if (key === 'officeApps') return Math.round((value / 5) * 100);
+                        if (value === 3) return 0;
+                        return Math.round((value / 2) * 100);
+                    };
+
+                    const radarValues = [
+                        toPct('advancedSearch', ds.advancedSearch),
+                        toPct('fileOps', ds.fileOps),
+                        toPct('officeApps', ds.officeApps),
+                        toPct('aiProductivity', ds.aiProductivity),
+                        toPct('cybersecurity', ds.cybersecurity)
+                    ];
+
+                    const avg = Math.round(radarValues.reduce((a, b) => a + b, 0) / radarValues.length);
+                    const unknownCount = [
+                        ds.advancedSearch,
+                        ds.fileOps,
+                        ds.aiProductivity,
+                        ds.cybersecurity
+                    ].filter(v => v === 3).length;
+
+                    return {
+                        name: user.name || 'مشارك',
+                        values: radarValues,
+                        avg,
+                        unknownCount
+                    };
+                })
+                .sort((a, b) => b.avg - a.avg);
+
+            if (!participants.length) {
+                container.innerHTML = '<div class="text-gray-400">لا توجد بيانات كفاءات حتى الآن.</div>';
+                return;
+            }
+
+            const palette = [
+                ['rgba(251,191,36,0.28)', '#fbbf24'],
+                ['rgba(59,130,246,0.25)', '#3b82f6'],
+                ['rgba(34,197,94,0.25)', '#22c55e'],
+                ['rgba(244,63,94,0.25)', '#f43f5e'],
+                ['rgba(20,184,166,0.25)', '#14b8a6'],
+                ['rgba(168,85,247,0.25)', '#a855f7']
+            ];
+
+            container.innerHTML = participants.map((p, i) => `
+                <div class="bg-navy-dark p-4 rounded-2xl border border-navy-lighter">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-white truncate">${p.name}</h4>
+                        <span class="text-gold font-bold">${p.avg}%</span>
+                    </div>
+                    <div class="h-56">
+                        <canvas id="digital-profile-${i}"></canvas>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-400">لا أعرف: ${p.unknownCount} محور</div>
+                </div>
+            `).join('');
+
+            participants.forEach((p, i) => {
+                const ctx = document.getElementById(`digital-profile-${i}`);
+                if (!ctx) return;
+                const [fill, stroke] = palette[i % palette.length];
+
+                const chart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: skillLabels,
+                        datasets: [{
+                            label: p.name,
+                            data: p.values,
+                            backgroundColor: fill,
+                            borderColor: stroke,
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointBackgroundColor: stroke
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 100,
+                                ticks: { display: false, stepSize: 20 },
+                                grid: { color: '#334155' },
+                                angleLines: { color: '#334155' },
+                                pointLabels: { color: '#cbd5e1', font: { family: 'Cairo', size: 11 } }
+                            }
+                        }
+                    }
+                });
+                digitalProfileCharts.push(chart);
+            });
         }
 
         function updateGroups(users) {
@@ -1116,11 +1688,11 @@
                 toolsChart = new Chart(toolsCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['ChatGPT', 'Gemini', 'Copilot', 'Perplexity', 'لا شيء'],
+                        labels: ['ChatGPT', 'Gemini', 'Copilot', 'Perplexity', 'Grok', 'Claude', 'لا شيء'],
                         datasets: [{
                             label: 'عدد المستخدمين',
-                            data: [0, 0, 0, 0, 0],
-                            backgroundColor: ['#22c55e', '#3b82f6', '#8b5cf6', '#f97316', '#6b7280'],
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            backgroundColor: ['#22c55e', '#3b82f6', '#8b5cf6', '#f97316', '#f43f5e', '#14b8a6', '#6b7280'],
                             borderRadius: 8
                         }]
                     },
@@ -1172,15 +1744,34 @@
                 initCharts();
                 listenToStepChanges();
                 listenToUsers();
+                document.addEventListener('pointerdown', () => {
+                    try {
+                        if (!alertAudioContext) {
+                            const Ctx = window.AudioContext || window.webkitAudioContext;
+                            if (Ctx) alertAudioContext = new Ctx();
+                        }
+                        if (alertAudioContext && alertAudioContext.state === 'suspended') {
+                            alertAudioContext.resume();
+                        }
+                    } catch (error) {
+                        console.warn('Audio context init failed:', error);
+                    }
+                }, { once: true });
             } else {
                 document.getElementById('user-view').classList.remove('hidden');
                 // Check if already joined
                 if (userName) {
                     showScreen('wait-screen');
                     listenToStepChanges();
+                    startRaiseHandListener();
+                    renderRaiseHandState();
                 }
             }
         }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeWorksheetModal();
+        });
 
         init();
     </script>
