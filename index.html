@@ -108,43 +108,71 @@
         /* Custom Slider */
         input[type="range"] {
             -webkit-appearance: none;
-            background: transparent;
+            appearance: none;
             width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            --range-progress: 50%;
+            --range-fill: #fbbf24;
+            --range-fill-2: #f59e0b;
+            --range-rest: #1f2f4a;
+            --range-border: #3b4b66;
         }
 
         input[type="range"]::-webkit-slider-track {
-            height: 12px;
-            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            height: 8px;
+            background:
+                linear-gradient(90deg,
+                    var(--range-fill) 0%,
+                    var(--range-fill-2) var(--range-progress),
+                    var(--range-rest) var(--range-progress),
+                    var(--range-rest) 100%);
             border-radius: 999px;
-            border: 1px solid #fcd34d;
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.35), inset 0 0 0 1px rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--range-border);
+            box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(2, 6, 23, 0.15);
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 24px;
             height: 24px;
-            background: #fbbf24;
+            background: radial-gradient(circle at 35% 35%, #ffe7a3 0%, #fbbf24 55%, #f59e0b 100%);
             border-radius: 50%;
             cursor: pointer;
-            margin-top: -7px;
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2);
+            margin-top: -8px;
+            border: 2px solid #fff2c7;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.22), 0 6px 14px rgba(15, 23, 42, 0.35);
+            transition: transform 0.08s ease;
+        }
+
+        input[type="range"]:active::-webkit-slider-thumb {
+            transform: scale(1.05);
         }
 
         input[type="range"]::-moz-range-track {
-            height: 12px;
-            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            height: 8px;
+            background:
+                linear-gradient(90deg,
+                    var(--range-fill) 0%,
+                    var(--range-fill-2) var(--range-progress),
+                    var(--range-rest) var(--range-progress),
+                    var(--range-rest) 100%);
             border-radius: 999px;
-            border: 1px solid #fcd34d;
+            border: 1px solid var(--range-border);
         }
 
         input[type="range"]::-moz-range-thumb {
             width: 24px;
             height: 24px;
-            background: #fbbf24;
+            background: radial-gradient(circle at 35% 35%, #ffe7a3 0%, #fbbf24 55%, #f59e0b 100%);
             border-radius: 50%;
-            border: 0;
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2);
+            border: 2px solid #fff2c7;
+            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.22), 0 6px 14px rgba(15, 23, 42, 0.35);
+            transition: transform 0.08s ease;
+        }
+
+        input[type="range"]:active::-moz-range-thumb {
+            transform: scale(1.05);
         }
 
         @keyframes buzz {
@@ -273,6 +301,12 @@
             z-index: 70;
             pointer-events: none;
             padding-right: 0;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+
+        .assistant-shell.is-hidden {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         .assistant-panel {
@@ -335,7 +369,27 @@
             pointer-events: none;
         }
 
+        .assistant-show-btn {
+            position: fixed;
+            right: 10px;
+            bottom: 12px;
+            z-index: 72;
+            width: 46px;
+            height: 46px;
+            border-radius: 999px;
+            border: 1px solid rgba(251, 191, 36, 0.55);
+            background: rgba(15, 23, 42, 0.95);
+            color: #fbbf24;
+            font-size: 20px;
+            box-shadow: 0 8px 22px rgba(2, 6, 23, 0.45);
+            transition: opacity 0.2s ease;
+        }
+
         @media (max-width: 640px) {
+            .screen.active {
+                padding-bottom: 170px !important;
+            }
+
             .assistant-shell {
                 right: 0;
                 bottom: 6px;
@@ -360,6 +414,11 @@
             .assistant-avatar {
                 width: 112px;
                 height: 138px;
+            }
+
+            .assistant-show-btn {
+                right: 8px;
+                bottom: 8px;
             }
         }
     </style>
@@ -1119,6 +1178,9 @@
             <img src="ai.png" alt="المرافق الرقمي" class="assistant-avatar">
         </div>
     </div>
+    <button id="assistant-show-btn" class="assistant-show-btn hidden" type="button" onclick="showAssistantNow()" aria-label="إظهار المساعد">
+        🤖
+    </button>
 
     <!-- ==================== FIREBASE & APP LOGIC ==================== -->
     <script type="module">
@@ -1179,6 +1241,8 @@
         let lastRaiseHandCount = -1;
         let worksheetZoom = 1;
         let alertAudioContext = null;
+        let sliderAudioContext = null;
+        let lastSliderTickAt = 0;
         let assistantTimer = null;
         let assistantMessageCursor = 0;
         let knowledgeDraft = null;
@@ -1186,6 +1250,7 @@
         let digitalSkillsDraft = null;
         let promptDraft = null;
         let requireResponseConfirmation = true;
+        let assistantAutoHidden = false;
 
         function generateId() {
             const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1389,6 +1454,70 @@
             }
         }
 
+        function updateSliderVisual(slider) {
+            if (!slider) return;
+            const min = Number(slider.min || 0);
+            const max = Number(slider.max || 100);
+            const value = Number(slider.value || min);
+            const pct = max > min ? ((value - min) / (max - min)) * 100 : 0;
+            slider.style.setProperty('--range-progress', `${Math.max(0, Math.min(100, pct))}%`);
+        }
+
+        function ensureSliderAudioContext() {
+            if (!sliderAudioContext) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return null;
+                sliderAudioContext = new Ctx();
+            }
+            if (sliderAudioContext.state === 'suspended') sliderAudioContext.resume();
+            return sliderAudioContext;
+        }
+
+        function playSliderTick() {
+            const nowMs = performance.now();
+            if (nowMs - lastSliderTickAt < 45) return;
+            lastSliderTickAt = nowMs;
+
+            try {
+                const ctx = ensureSliderAudioContext();
+                if (!ctx) return;
+                const t = ctx.currentTime;
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.0001, t);
+                gain.gain.exponentialRampToValueAtTime(0.035, t + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+                gain.connect(ctx.destination);
+
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(560, t);
+                osc.frequency.linearRampToValueAtTime(680, t + 0.05);
+                osc.connect(gain);
+                osc.start(t);
+                osc.stop(t + 0.07);
+            } catch (error) {
+                console.warn('Slider tick audio failed:', error);
+            }
+        }
+
+        function initRangeInputs() {
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => {
+                updateSliderVisual(slider);
+                slider.addEventListener('input', () => {
+                    updateSliderVisual(slider);
+                    playSliderTick();
+                });
+            });
+            document.addEventListener('pointerdown', () => {
+                try {
+                    ensureSliderAudioContext();
+                } catch (error) {
+                    console.warn('Slider audio init failed:', error);
+                }
+            }, { once: true });
+        }
+
         // ============================================
         // 👤 USER FUNCTIONS
         // ============================================
@@ -1426,12 +1555,15 @@
 
         function initDigitalAssistant() {
             const wrap = document.getElementById('digital-assistant');
+            const showBtn = document.getElementById('assistant-show-btn');
             if (!wrap) return;
             if (isAdmin) {
                 wrap.classList.add('hidden');
+                if (showBtn) showBtn.classList.add('hidden');
                 return;
             }
             wrap.classList.remove('hidden');
+            if (showBtn) showBtn.classList.add('hidden');
 
             const panel = document.getElementById('assistant-panel');
             if (!panel) return;
@@ -1442,7 +1574,42 @@
             }, 15000);
 
             assistantSpeak(getAssistantLine());
+            initAssistantScrollBehavior();
         }
+
+        function setAssistantAutoVisibility(hidden) {
+            const wrap = document.getElementById('digital-assistant');
+            const showBtn = document.getElementById('assistant-show-btn');
+            if (!wrap || wrap.classList.contains('hidden')) return;
+            assistantAutoHidden = !!hidden;
+            wrap.classList.toggle('is-hidden', assistantAutoHidden);
+            if (showBtn) showBtn.classList.toggle('hidden', !assistantAutoHidden);
+        }
+
+        function initAssistantScrollBehavior() {
+            if (isAdmin) return;
+            let initialized = window.__assistantScrollInit;
+            if (initialized) return;
+            window.__assistantScrollInit = true;
+
+            const onScroll = () => {
+                const y = window.scrollY || document.documentElement.scrollTop || 0;
+                if (y <= 30) {
+                    setAssistantAutoVisibility(false);
+                } else if (y > 90) {
+                    setAssistantAutoVisibility(true);
+                }
+            };
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', onScroll);
+            onScroll();
+        }
+
+        window.showAssistantNow = function () {
+            setAssistantAutoVisibility(false);
+            assistantSpeak(getAssistantLine());
+        };
 
         function collectKnowledgeDraft() {
             const tools = [];
@@ -2405,6 +2572,7 @@
         function init() {
             initDigitalAssistant();
             listenToSessionSettings();
+            initRangeInputs();
             if (isAdmin) {
                 document.getElementById('admin-view').classList.remove('hidden');
                 initCharts();
