@@ -265,6 +265,103 @@
             font-weight: bold;
             color: #fbbf24;
         }
+
+        .assistant-shell {
+            position: fixed;
+            bottom: 10px;
+            right: 0;
+            z-index: 70;
+            pointer-events: none;
+            padding-right: 0;
+        }
+
+        .assistant-panel {
+            position: relative;
+            width: 126px;
+            height: 146px;
+        }
+
+        .assistant-bubble {
+            position: absolute;
+            bottom: 130px;
+            right: calc(100% - 12px);
+            width: clamp(210px, 52vw, 300px);
+            max-width: 300px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #f8fafc;
+            border-radius: 14px;
+            padding: 10px 12px;
+            line-height: 1.6;
+            font-size: 14px;
+            direction: rtl;
+            text-align: right;
+            box-shadow: 0 10px 26px rgba(2, 6, 23, 0.45);
+            backdrop-filter: blur(4px);
+            animation: fadeInUp 0.28s ease;
+            pointer-events: auto;
+            margin: 0;
+            transform: none;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: break-word;
+        }
+
+        .assistant-bubble::after {
+            content: '';
+            position: absolute;
+            right: 14px;
+            bottom: -7px;
+            width: 12px;
+            height: 12px;
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid rgba(148, 163, 184, 0.35);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+            transform: rotate(45deg);
+        }
+
+        .assistant-avatar {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 122px;
+            height: 146px;
+            object-fit: contain;
+            object-position: right bottom;
+            filter: drop-shadow(0 8px 18px rgba(2, 6, 23, 0.55));
+            animation: float 3.2s ease-in-out infinite;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
+
+        @media (max-width: 640px) {
+            .assistant-shell {
+                right: 0;
+                bottom: 6px;
+                padding-right: 0;
+            }
+
+            .assistant-panel {
+                width: 116px;
+                height: 138px;
+            }
+
+            .assistant-bubble {
+                bottom: 122px;
+                right: calc(100% - 8px);
+                width: clamp(185px, 60vw, 250px);
+                max-width: 250px;
+                font-size: 13px;
+                padding: 9px 10px;
+                transform: none;
+            }
+
+            .assistant-avatar {
+                width: 112px;
+                height: 138px;
+            }
+        }
     </style>
 </head>
 
@@ -859,6 +956,15 @@
         </div>
     </div>
 
+    <div id="digital-assistant" class="assistant-shell hidden">
+        <div id="assistant-panel" class="assistant-panel">
+            <div id="assistant-message" class="assistant-bubble">
+                أهلا يا معالي المستشار، أنا مع حضرتك خطوة بخطوة.
+            </div>
+            <img src="ai.png" alt="المرافق الرقمي" class="assistant-avatar">
+        </div>
+    </div>
+
     <!-- ==================== FIREBASE & APP LOGIC ==================== -->
     <script type="module">
         // ============================================
@@ -918,12 +1024,77 @@
         let lastRaiseHandCount = -1;
         let worksheetZoom = 1;
         let alertAudioContext = null;
+        let assistantTimer = null;
+        let assistantMessageCursor = 0;
 
         function generateId() {
             const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('userId', id);
             return id;
         }
+
+        const ASSISTANT_LINES = {
+            'login-screen': [
+                'أهلا وسهلا يا معالي المستشار، سيادتك اكتب الاسم بالكامل وأنا معاك.',
+                'لو تحب سرعة في الدخول، اكتب الاسم واضغط انضمام، والباقي عليا يا فندم.'
+            ],
+            'wait-screen': [
+                'معاليك في انتظار بداية الخطوة الجاية، خليك جاهز.',
+                'سيادتك تمام، أول ما المحاضر يفتح الخطوة هنبقى مع بعض مباشرة.'
+            ],
+            'knowledge-screen': [
+                'معالي المستشار، اختار الأدوات اللي استخدمتها فعلا وبصراحة.',
+                'كل اختيار من سيادتك بيساعدنا نضبط مستوى الشرح بشكل أدق.'
+            ],
+            'skills-screen': [
+                'يا فندم قيّم كل مهارة براحتك، هنا مفيش صح وغلط.',
+                'لو في حاجة مش واضحة لمعاليك، اختار لا أعرف بكل أريحية.'
+            ],
+            'groups-screen': [
+                'معاليك اختار المجموعة المناسبة، وأنا هأكد الاختيار مع حضرتك.',
+                'سيادتك بمجرد تختار مجموعة، هنجهزك للخطوة اللي بعدها.'
+            ],
+            'prompt-screen': [
+                'يا معالي المستشار، راجع الاختيارات واختار الأنسب من وجهة نظر سيادتك.',
+                'صوت حضرتك مهم، اختار بهدوء وأنا متابع مع معاليك.'
+            ],
+            'feedback-screen': [
+                'مستني تقييم سيادتك للجلسة، رأي معاليك مهم جدا للتطوير.',
+                'اديني تقييمك الحقيقي يا فندم عشان نخلي الجلسات القادمة أقوى.'
+            ],
+            'thanks-screen': [
+                'تسلم يا معالي المستشار، مساهمة سيادتك فرقت جدا.',
+                'شكرا لوقت معاليك، ويشرفني أكون مرافقك في الجلسات الجاية.'
+            ],
+            'admin-intro': [
+                'معالي المستشار، لوحة التحكم جاهزة وسيادتك ماسك زمام الجلسة.',
+                'كل المؤشرات قدام حضرتك، ونقدر نتحرك بين المراحل بثبات.'
+            ],
+            'admin-knowledge': [
+                'يا فندم دي نظرة سريعة على الفجوة المعرفية، الأرقام بتتكلم.',
+                'سيادتك تقدر تحدد أولويات الشرح من الشاشة دي مباشرة.'
+            ],
+            'admin-skills': [
+                'معاليك هنا هتشوف خريطة المهارات الرقمية لكل المشاركين.',
+                'لو لاحظت فجوة، نقدر نوصي بخطة دعم فورية يا فندم.'
+            ],
+            'admin-groups': [
+                'توزيع المجموعات واضح يا معالي المستشار، التوازن جيد حتى الآن.',
+                'سيادتك تقدر تراجع القوائم وتعيد الضبط لو احتجت.'
+            ],
+            'admin-prompt': [
+                'نتائج التصويت بتتحدث لحظيا يا فندم، سيادتك عندك الصورة الكاملة.',
+                'معاليك يقدر يبني القرار القادم بناء على الميل العام للمشاركين.'
+            ],
+            'admin-feedback': [
+                'مؤشر الرضا قدام سيادتك، ودي فرصة ممتازة لتحسين الجولة الجاية.',
+                'معالي المستشار، اقرأ التقييمات واطلع بأفضل توصية ختامية.'
+            ],
+            default: [
+                'أنا مع معاليك طول الوقت، ولو احتجت تنبيه هكون أول واحد يفكرك.',
+                'سيادتك متحكم في كل شيء، وأنا هنا للدعم السريع.'
+            ]
+        };
 
         // ============================================
         // 🎨 UI HELPERS
@@ -932,6 +1103,7 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const screen = document.getElementById(screenId);
             if (screen) screen.classList.add('active');
+            updateAssistantByContext(true);
         }
 
         function showAdminScreen(screenId) {
@@ -949,6 +1121,7 @@
                 activeBtn.classList.remove('bg-navy-dark');
                 activeBtn.classList.add('bg-gold', 'text-navy-dark');
             }
+            updateAssistantByContext(true);
         }
 
         function updateFeedbackLabel() {
@@ -1039,6 +1212,58 @@
         // ============================================
         // 👤 USER FUNCTIONS
         // ============================================
+        function getAssistantContextKey() {
+            const activeScreen = document.querySelector('.screen.active');
+            return activeScreen ? activeScreen.id : 'login-screen';
+        }
+
+        function getAssistantLine() {
+            const key = getAssistantContextKey();
+            const lines = ASSISTANT_LINES[key] || ASSISTANT_LINES.default;
+            if (!lines || !lines.length) return ASSISTANT_LINES.default[0];
+            assistantMessageCursor = (assistantMessageCursor + 1) % lines.length;
+            return lines[assistantMessageCursor];
+        }
+
+        function assistantSpeak(text) {
+            const bubble = document.getElementById('assistant-message');
+            if (!bubble) return;
+            bubble.style.opacity = '0.5';
+            setTimeout(() => {
+                bubble.textContent = text;
+                bubble.style.opacity = '1';
+                bubble.classList.remove('fade-in-up');
+                void bubble.offsetWidth;
+                bubble.classList.add('fade-in-up');
+            }, 120);
+        }
+
+        function updateAssistantByContext(forceNewLine = false) {
+            const bubble = document.getElementById('assistant-message');
+            if (!bubble) return;
+            if (forceNewLine) assistantSpeak(getAssistantLine());
+        }
+
+        function initDigitalAssistant() {
+            const wrap = document.getElementById('digital-assistant');
+            if (!wrap) return;
+            if (isAdmin) {
+                wrap.classList.add('hidden');
+                return;
+            }
+            wrap.classList.remove('hidden');
+
+            const panel = document.getElementById('assistant-panel');
+            if (!panel) return;
+
+            if (assistantTimer) clearInterval(assistantTimer);
+            assistantTimer = setInterval(() => {
+                assistantSpeak(getAssistantLine());
+            }, 15000);
+
+            assistantSpeak(getAssistantLine());
+        }
+
         window.logoutUser = async function () {
             if (!confirm('هل تريد تسجيل الخروج؟')) return;
 
@@ -1070,6 +1295,7 @@
 
             // Show wait screen immediately
             showScreen('wait-screen');
+            assistantSpeak('أهلا بيك يا معالي المستشار، تم تسجيل دخول سيادتك بنجاح.');
 
             try {
                 await set(ref(db, `users/${userId}`), {
@@ -1101,6 +1327,7 @@
             });
 
             showScreen('wait-screen');
+            assistantSpeak('ممتاز يا فندم، وصلتني إجابة الفجوة المعرفية الخاصة بسيادتك.');
         };
 
         window.submitDigitalSkills = async function () {
@@ -1112,6 +1339,7 @@
 
             await set(ref(db, `users/${userId}/digitalSkills`), digitalSkills);
             showScreen('wait-screen');
+            assistantSpeak('تقييم المهارات اتسجل يا معالي المستشار، تسلم إيد سيادتك.');
         };
 
         window.toggleRaiseHand = async function () {
@@ -1122,6 +1350,9 @@
             });
             isHandRaised = nextState;
             renderRaiseHandState();
+            assistantSpeak(nextState
+                ? 'تمام يا فندم، تم إرسال طلب الكلمة وسيادتك في الأولوية.'
+                : 'تم إلغاء طلب الكلمة يا معاليك.');
         };
 
         window.openWorksheetModal = function () {
@@ -1162,6 +1393,7 @@
             });
 
             document.getElementById('group-choice-note')?.classList.remove('hidden');
+            assistantSpeak(`اختيار موفق يا معالي المستشار، سيادتك في المجموعة ${group}.`);
         };
 
         window.submitVote = async function () {
@@ -1170,12 +1402,14 @@
 
             await set(ref(db, `users/${userId}/promptVote`), parseInt(selected.value));
             showScreen('wait-screen');
+            assistantSpeak('رأي سيادتك اتسجل، شكرا يا معالي المستشار.');
         };
 
         window.submitFeedback = async function () {
             const value = parseInt(document.getElementById('feedback-slider').value);
             await set(ref(db, `users/${userId}/feedback`), value);
             showScreen('thanks-screen');
+            assistantSpeak('تقييم معاليك وصل بنجاح، متشكرين جدا لذوق سيادتك.');
         };
 
         // Update proficiency display
@@ -1739,6 +1973,7 @@
         // 🚀 INITIALIZE APP
         // ============================================
         function init() {
+            initDigitalAssistant();
             if (isAdmin) {
                 document.getElementById('admin-view').classList.remove('hidden');
                 initCharts();
