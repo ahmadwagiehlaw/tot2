@@ -446,71 +446,144 @@
             </button>
         </div>
 
+        <!-- Screen 0: Orientation -->
+        <div id="orientation-screen" class="screen min-h-screen p-6">
+            <div class="max-w-lg mx-auto">
+                <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter mb-6">
+                    <h2 class="text-xl font-bold text-gold mb-2">🧭 توجهات الاستخدام</h2>
+                    <p class="text-gray-300 mb-6">
+                        عند التعامل مع مهام البحث والتحليل القانوني، إلى أي مدى ترى أن أدوات الذكاء الاصطناعي
+                        يمكن الاعتماد عليها عمليًا؟
+                    </p>
+
+                    <div id="orientation-form">
+                        <div class="space-y-3 mb-6">
+                            <label
+                                class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                                <input type="radio" name="orientation-option" value="1" class="mt-1 w-5 h-5 accent-gold">
+                                <span>نعم بالطبع</span>
+                            </label>
+                            <label
+                                class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                                <input type="radio" name="orientation-option" value="2" class="mt-1 w-5 h-5 accent-gold">
+                                <span>لا على الإطلاق</span>
+                            </label>
+                            <label
+                                class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
+                                <input type="radio" name="orientation-option" value="3" class="mt-1 w-5 h-5 accent-gold">
+                                <span>لم أجربه أصلًا</span>
+                            </label>
+                        </div>
+
+                        <button onclick="submitOrientation()"
+                            class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                            إرسال
+                        </button>
+                    </div>
+
+                    <div id="orientation-review" class="hidden bg-navy-dark border border-navy-lighter rounded-xl p-4">
+                        <h3 class="text-lg font-bold text-gold mb-3">تأكيد التوجه</h3>
+                        <div class="text-sm text-gray-300 mb-2">اختيارك:</div>
+                        <div id="orientation-review-choice" class="text-white mb-4">-</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="confirmOrientationSubmission()"
+                                class="p-3 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                                تأكيد الإجابة
+                            </button>
+                            <button onclick="editOrientationSubmission()"
+                                class="p-3 bg-navy-light hover:bg-navy-lighter border border-navy-lighter text-white font-bold rounded-xl transition">
+                                العودة للتعديل
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Screen A: Knowledge Gap -->
         <div id="knowledge-screen" class="screen min-h-screen p-6">
             <div class="max-w-lg mx-auto">
                 <div class="bg-navy-light p-6 rounded-2xl card-glow border border-navy-lighter mb-6">
                     <h2 class="text-xl font-bold text-gold mb-4">🧠 الفجوة المعرفية</h2>
-
-                    <div class="mb-6">
-                        <p class="mb-3 font-semibold">أي من هذه الأدوات استخدمتها؟</p>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="ChatGPT" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>ChatGPT</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="Gemini" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>Gemini</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="Copilot" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>Copilot</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="Perplexity" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>Perplexity</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="Grok" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>Grok</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
-                                <input type="checkbox" value="Claude" class="tool-checkbox w-5 h-5 accent-gold">
-                                <span>Claude</span>
-                            </label>
-                            <label
-                                class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition col-span-2">
-                                <input type="checkbox" value="None" class="tool-checkbox w-5 h-5 accent-gold"
-                                    id="none-checkbox">
-                                <span>لم أستخدم أياً منها</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <p class="mb-3 font-semibold">ما مستوى كفاءتك في استخدام الذكاء الاصطناعي؟</p>
-                        <div class="bg-navy-dark p-4 rounded-xl">
-                            <input type="range" id="proficiency-slider" min="0" max="100" value="50"
-                                class="w-full mb-2">
-                            <div class="flex justify-between text-sm text-gray-400">
-                                <span>مبتدئ</span>
-                                <span id="proficiency-value" class="text-gold font-bold">50%</span>
-                                <span>خبير</span>
+                    <div id="knowledge-form">
+                        <div class="mb-6">
+                            <p class="mb-3 font-semibold">أي من هذه الأدوات استخدمتها؟</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="ChatGPT" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>ChatGPT</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="Gemini" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>Gemini</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="Copilot" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>Copilot</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="Perplexity" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>Perplexity</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="Grok" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>Grok</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition">
+                                    <input type="checkbox" value="Claude" class="tool-checkbox w-5 h-5 accent-gold">
+                                    <span>Claude</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-3 p-3 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition col-span-2">
+                                    <input type="checkbox" value="None" class="tool-checkbox w-5 h-5 accent-gold"
+                                        id="none-checkbox">
+                                    <span>لم أستخدم أياً منها</span>
+                                </label>
                             </div>
                         </div>
+
+                        <div class="mb-6">
+                            <p class="mb-3 font-semibold">ما مستوى كفاءتك في استخدام الذكاء الاصطناعي؟</p>
+                            <div class="bg-navy-dark p-4 rounded-xl">
+                                <input type="range" id="proficiency-slider" min="0" max="100" value="50"
+                                    class="w-full mb-2">
+                                <div class="flex justify-between text-sm text-gray-400">
+                                    <span>مبتدئ</span>
+                                    <span id="proficiency-value" class="text-gold font-bold">50%</span>
+                                    <span>خبير</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="submitKnowledge()"
+                            class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                            إرسال
+                        </button>
                     </div>
 
-                    <button onclick="submitKnowledge()"
-                        class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
-                        إرسال
-                    </button>
+                    <div id="knowledge-review" class="hidden bg-navy-dark border border-navy-lighter rounded-xl p-4">
+                        <h3 class="text-lg font-bold text-gold mb-3">مراجعة الإجابة قبل التأكيد</h3>
+                        <div class="text-sm text-gray-300 mb-2">الأدوات المختارة:</div>
+                        <div id="knowledge-review-tools" class="text-white mb-4 break-words">-</div>
+                        <div class="text-sm text-gray-300 mb-2">مستوى الكفاءة:</div>
+                        <div id="knowledge-review-proficiency" class="text-gold font-bold mb-4">-</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="confirmKnowledgeSubmission()"
+                                class="p-3 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                                تأكيد الإجابة
+                            </button>
+                            <button onclick="editKnowledgeSubmission()"
+                                class="p-3 bg-navy-light hover:bg-navy-lighter border border-navy-lighter text-white font-bold rounded-xl transition">
+                                العودة للتعديل
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -522,7 +595,8 @@
                     <h2 class="text-xl font-bold text-gold mb-2">مصفوفة الكفاءات الرقمية</h2>
                     <p class="text-gray-300 mb-6">قيّم نفسك في كل مهارة باستخدام السلايدر</p>
 
-                    <div class="space-y-5">
+                    <div id="skills-form">
+                        <div class="space-y-5">
                         <div class="bg-navy-dark p-4 rounded-xl">
                             <p class="mb-3 font-semibold">البحث المتقدم والخارق السرعة</p>
                             <input type="range" min="0" max="3" value="1" class="w-full skill-slider"
@@ -567,14 +641,30 @@
                                 <span>🐢 مبتدئ</span><span id="cybersecurity-label" class="text-gold font-bold">متمكن</span><span>🚀 خبير</span>
                             </div>
                         </div>
-                    </div>
+                        </div>
 
                     <div class="text-sm text-gray-400 mt-4">مقياس التقييم: مبتدئ - متمكن - خبير - لا أعرف</div>
 
-                    <button onclick="submitDigitalSkills()"
-                        class="w-full mt-6 p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
-                        إرسال
-                    </button>
+                        <button onclick="submitDigitalSkills()"
+                            class="w-full mt-6 p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                            إرسال
+                        </button>
+                    </div>
+
+                    <div id="skills-review" class="hidden bg-navy-dark border border-navy-lighter rounded-xl p-4 mt-4">
+                        <h3 class="text-lg font-bold text-gold mb-3">مراجعة إجابة المهارات</h3>
+                        <div id="skills-review-summary" class="text-gray-200 mb-4 leading-7">-</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="confirmDigitalSkillsSubmission()"
+                                class="p-3 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                                تأكيد الإجابة
+                            </button>
+                            <button onclick="editDigitalSkillsSubmission()"
+                                class="p-3 bg-navy-light hover:bg-navy-lighter border border-navy-lighter text-white font-bold rounded-xl transition">
+                                العودة للتعديل
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -642,9 +732,10 @@
                         </p>
                     </div>
 
-                    <p class="mb-4 font-semibold">أي أمر (Prompt) هو الأفضل؟</p>
+                    <div id="prompt-form">
+                        <p class="mb-4 font-semibold">أي أمر (Prompt) هو الأفضل؟</p>
 
-                    <div class="space-y-3 mb-6">
+                        <div class="space-y-3 mb-6">
                         <label
                             class="flex items-start gap-3 p-4 bg-navy-dark rounded-xl cursor-pointer hover:bg-navy-lighter transition border border-transparent has-[:checked]:border-gold">
                             <input type="radio" name="prompt-option" value="1" class="mt-1 w-5 h-5 accent-gold">
@@ -661,12 +752,28 @@
                             <span>"تصرف كباحث في محكمة النقض. استخرج الجدول الزمني، والدفوع القانونية، والحكم النهائي من
                                 النص المرفق في شكل جدول."</span>
                         </label>
+                        </div>
+
+                        <button onclick="submitVote()"
+                            class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                            صوّت
+                        </button>
                     </div>
 
-                    <button onclick="submitVote()"
-                        class="w-full p-4 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
-                        صوّت
-                    </button>
+                    <div id="prompt-review" class="hidden bg-navy-dark border border-navy-lighter rounded-xl p-4 mt-4">
+                        <h3 class="text-lg font-bold text-gold mb-3">مراجعة اختيار التصويت</h3>
+                        <div id="prompt-review-choice" class="text-gray-200 mb-4 leading-7">-</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="confirmVoteSubmission()"
+                                class="p-3 bg-gold hover:bg-gold-hover text-navy-dark font-bold rounded-xl transition">
+                                تأكيد الإجابة
+                            </button>
+                            <button onclick="editVoteSubmission()"
+                                class="p-3 bg-navy-light hover:bg-navy-lighter border border-navy-lighter text-white font-bold rounded-xl transition">
+                                العودة للتعديل
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -728,6 +835,11 @@
                         data-step="intro">
                         المقدمة
                     </button>
+                    <button onclick="setStep('orientation')"
+                        class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
+                        data-step="orientation">
+                        التوجهات
+                    </button>
                     <button onclick="setStep('knowledge')"
                         class="step-btn px-4 py-2 bg-navy-dark hover:bg-gold hover:text-navy-dark rounded-lg transition"
                         data-step="knowledge">
@@ -759,6 +871,11 @@
                         <span class="text-gray-400">الحضور:</span>
                         <span id="attendee-count" class="text-2xl font-bold text-gold">0</span>
                     </div>
+                    <label class="flex items-center gap-2 px-3 py-2 bg-navy-dark rounded-lg border border-navy-lighter">
+                        <input id="confirm-setting-toggle" type="checkbox" class="w-4 h-4 accent-gold"
+                            onchange="toggleResponseConfirmation(this.checked)">
+                        <span class="text-sm text-gray-200">تفعيل التأكيد قبل الإرسال</span>
+                    </label>
                     <button onclick="resetSession()"
                         class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition text-sm">
                         🔄 إعادة الجلسة
@@ -792,6 +909,44 @@
             <h2 class="text-2xl font-bold text-gold mb-4">👥 الحضور</h2>
             <div id="names-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 <!-- Names will be added here -->
+            </div>
+        </div>
+
+        <div id="admin-orientation" class="admin-screen hidden">
+            <div class="bg-navy-light p-6 rounded-2xl border border-navy-lighter">
+                <h3 class="text-xl font-bold text-gold mb-5">نتائج توجهات المشاركين</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-900/30 rounded-xl border border-green-600">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-green-400 font-bold">نعم بالطبع</span>
+                            <span id="orientation1-count" class="text-green-400">0</span>
+                        </div>
+                        <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                            <div id="orientation1-bar" class="bg-green-500 h-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-red-900/30 rounded-xl border border-red-600">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-red-400 font-bold">لا على الإطلاق</span>
+                            <span id="orientation2-count" class="text-red-400">0</span>
+                        </div>
+                        <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                            <div id="orientation2-bar" class="bg-red-500 h-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-yellow-900/30 rounded-xl border border-yellow-600">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-yellow-400 font-bold">لم أجربه أصلًا</span>
+                            <span id="orientation3-count" class="text-yellow-400">0</span>
+                        </div>
+                        <div class="bg-navy-dark rounded-full h-3 overflow-hidden">
+                            <div id="orientation3-bar" class="bg-yellow-500 h-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-gray-400">
+                    إجمالي المشاركين في السؤال: <span id="orientation-total" class="text-gold font-bold">0</span>
+                </div>
             </div>
         </div>
 
@@ -1026,6 +1181,11 @@
         let alertAudioContext = null;
         let assistantTimer = null;
         let assistantMessageCursor = 0;
+        let knowledgeDraft = null;
+        let orientationDraft = null;
+        let digitalSkillsDraft = null;
+        let promptDraft = null;
+        let requireResponseConfirmation = true;
 
         function generateId() {
             const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1041,6 +1201,10 @@
             'wait-screen': [
                 'معاليك في انتظار بداية الخطوة الجاية، خليك جاهز.',
                 'سيادتك تمام، أول ما المحاضر يفتح الخطوة هنبقى مع بعض مباشرة.'
+            ],
+            'orientation-screen': [
+                'يا معالي المستشار، السؤال ده بيساعدنا نفهم التوجه الحقيقي للمشاركين.',
+                'اختار براحتك يا فندم، مفيش إجابة صح أو غلط هنا.'
             ],
             'knowledge-screen': [
                 'معالي المستشار، اختار الأدوات اللي استخدمتها فعلا وبصراحة.',
@@ -1069,6 +1233,10 @@
             'admin-intro': [
                 'معالي المستشار، لوحة التحكم جاهزة وسيادتك ماسك زمام الجلسة.',
                 'كل المؤشرات قدام حضرتك، ونقدر نتحرك بين المراحل بثبات.'
+            ],
+            'admin-orientation': [
+                'دي قراءة مباشرة لتوجهات المشاركين قبل بدء القياس المعرفي.',
+                'معاليك يقدر يبني على النتائج دي طريقة إدارة النقاش.'
             ],
             'admin-knowledge': [
                 'يا فندم دي نظرة سريعة على الفجوة المعرفية، الأرقام بتتكلم.',
@@ -1104,6 +1272,18 @@
             const screen = document.getElementById(screenId);
             if (screen) screen.classList.add('active');
             updateAssistantByContext(true);
+            if (screenId === 'orientation-screen') {
+                toggleOrientationReview(false);
+            }
+            if (screenId === 'knowledge-screen') {
+                toggleKnowledgeReview(false);
+            }
+            if (screenId === 'skills-screen') {
+                toggleDigitalSkillsReview(false);
+            }
+            if (screenId === 'prompt-screen') {
+                togglePromptReview(false);
+            }
         }
 
         function showAdminScreen(screenId) {
@@ -1264,6 +1444,137 @@
             assistantSpeak(getAssistantLine());
         }
 
+        function collectKnowledgeDraft() {
+            const tools = [];
+            document.querySelectorAll('.tool-checkbox:checked').forEach(cb => {
+                tools.push(cb.value);
+            });
+            const proficiency = parseInt(document.getElementById('proficiency-slider').value);
+            return {
+                tools,
+                proficiency
+            };
+        }
+
+        function renderKnowledgeReview(draft) {
+            const toolsEl = document.getElementById('knowledge-review-tools');
+            const proficiencyEl = document.getElementById('knowledge-review-proficiency');
+            if (!toolsEl || !proficiencyEl || !draft) return;
+
+            toolsEl.textContent = draft.tools.length ? draft.tools.join(' - ') : 'لا يوجد اختيار.';
+            proficiencyEl.textContent = `${draft.proficiency}%`;
+        }
+
+        function toggleKnowledgeReview(showReview) {
+            const form = document.getElementById('knowledge-form');
+            const review = document.getElementById('knowledge-review');
+            if (!form || !review) return;
+            form.classList.toggle('hidden', showReview);
+            review.classList.toggle('hidden', !showReview);
+        }
+
+        const ORIENTATION_LABELS = {
+            1: 'نعم بالطبع',
+            2: 'لا على الإطلاق',
+            3: 'لم أجربه أصلًا'
+        };
+
+        function toggleOrientationReview(showReview) {
+            const form = document.getElementById('orientation-form');
+            const review = document.getElementById('orientation-review');
+            if (!form || !review) return;
+            form.classList.toggle('hidden', showReview);
+            review.classList.toggle('hidden', !showReview);
+        }
+
+        function toggleDigitalSkillsReview(showReview) {
+            const form = document.getElementById('skills-form');
+            const review = document.getElementById('skills-review');
+            if (!form || !review) return;
+            form.classList.toggle('hidden', showReview);
+            review.classList.toggle('hidden', !showReview);
+        }
+
+        function renderDigitalSkillsReview(draft) {
+            const summary = document.getElementById('skills-review-summary');
+            if (!summary || !draft) return;
+            summary.innerHTML = [
+                `البحث المتقدم: <span class="text-gold font-bold">${DIGITAL_SKILL_LABELS[draft.advancedSearch] || '-'}</span>`,
+                `الملفات/OCR: <span class="text-gold font-bold">${DIGITAL_SKILL_LABELS[draft.fileOps] || '-'}</span>`,
+                `الأوفيس: <span class="text-gold font-bold">${draft.officeApps}</span>`,
+                `إنتاجية AI: <span class="text-gold font-bold">${DIGITAL_SKILL_LABELS[draft.aiProductivity] || '-'}</span>`,
+                `الأمن السيبراني: <span class="text-gold font-bold">${DIGITAL_SKILL_LABELS[draft.cybersecurity] || '-'}</span>`
+            ].join('<br>');
+        }
+
+        function togglePromptReview(showReview) {
+            const form = document.getElementById('prompt-form');
+            const review = document.getElementById('prompt-review');
+            if (!form || !review) return;
+            form.classList.toggle('hidden', showReview);
+            review.classList.toggle('hidden', !showReview);
+        }
+
+        function applyConfirmationSettingUI() {
+            const toggle = document.getElementById('confirm-setting-toggle');
+            if (toggle) toggle.checked = !!requireResponseConfirmation;
+        }
+
+        function listenToSessionSettings() {
+            onValue(ref(db, 'session_state/settings/require_confirmation'), async (snapshot) => {
+                const raw = snapshot.val();
+                if (typeof raw === 'boolean') {
+                    requireResponseConfirmation = raw;
+                } else {
+                    requireResponseConfirmation = true;
+                    if (isAdmin) {
+                        await set(ref(db, 'session_state/settings/require_confirmation'), true);
+                    }
+                }
+                applyConfirmationSettingUI();
+                if (!requireResponseConfirmation) {
+                    toggleOrientationReview(false);
+                    toggleKnowledgeReview(false);
+                    toggleDigitalSkillsReview(false);
+                    togglePromptReview(false);
+                }
+            });
+        }
+
+        window.toggleResponseConfirmation = async function (enabled) {
+            await set(ref(db, 'session_state/settings/require_confirmation'), !!enabled);
+        };
+
+        async function saveOrientation(choice) {
+            await set(ref(db, `users/${userId}/orientation`), {
+                choice,
+                submittedAt: Date.now(),
+                confirmed: true
+            });
+        }
+
+        async function saveKnowledge(draft) {
+            await set(ref(db, `users/${userId}/knowledge`), {
+                tools: draft.tools,
+                proficiency: draft.proficiency,
+                submittedAt: Date.now(),
+                confirmed: true
+            });
+        }
+
+        async function saveDigitalSkills(draft) {
+            const payload = {
+                ...draft,
+                submittedAt: Date.now(),
+                confirmed: true
+            };
+            await set(ref(db, `users/${userId}/digitalSkills`), payload);
+        }
+
+        async function savePromptVote(vote) {
+            await set(ref(db, `users/${userId}/promptVote`), vote);
+        }
+
         window.logoutUser = async function () {
             if (!confirm('هل تريد تسجيل الخروج؟')) return;
 
@@ -1314,20 +1625,63 @@
         };
 
         window.submitKnowledge = async function () {
-            const tools = [];
-            document.querySelectorAll('.tool-checkbox:checked').forEach(cb => {
-                tools.push(cb.value);
-            });
-            const proficiency = parseInt(document.getElementById('proficiency-slider').value);
+            knowledgeDraft = collectKnowledgeDraft();
+            if (!requireResponseConfirmation) {
+                await saveKnowledge(knowledgeDraft);
+                knowledgeDraft = null;
+                showScreen('wait-screen');
+                assistantSpeak('تم إرسال الإجابة مباشرة حسب إعدادات الجلسة يا فندم.');
+                return;
+            }
+            renderKnowledgeReview(knowledgeDraft);
+            toggleKnowledgeReview(true);
+            assistantSpeak('راجع إجابتك يا معالي المستشار، ثم أكد الإرسال أو ارجع للتعديل.');
+        };
 
-            await set(ref(db, `users/${userId}/knowledge`), {
-                tools: tools,
-                proficiency: proficiency,
-                submittedAt: Date.now()
-            });
+        window.submitOrientation = async function () {
+            const selected = document.querySelector('input[name="orientation-option"]:checked');
+            if (!selected) return;
+            orientationDraft = parseInt(selected.value);
+            if (!requireResponseConfirmation) {
+                await saveOrientation(orientationDraft);
+                orientationDraft = null;
+                showScreen('wait-screen');
+                assistantSpeak('تم إرسال التوجه مباشرة حسب إعدادات الجلسة.');
+                return;
+            }
+            const reviewChoice = document.getElementById('orientation-review-choice');
+            if (reviewChoice) reviewChoice.textContent = ORIENTATION_LABELS[orientationDraft] || '-';
+            toggleOrientationReview(true);
+            assistantSpeak('راجع اختيار التوجه ثم أكد الإرسال يا معالي المستشار.');
+        };
 
+        window.confirmOrientationSubmission = async function () {
+            if (!orientationDraft) return;
+            await saveOrientation(orientationDraft);
+            orientationDraft = null;
+            toggleOrientationReview(false);
             showScreen('wait-screen');
-            assistantSpeak('ممتاز يا فندم، وصلتني إجابة الفجوة المعرفية الخاصة بسيادتك.');
+            assistantSpeak('تم تأكيد توجه سيادتك بنجاح يا فندم.');
+        };
+
+        window.editOrientationSubmission = function () {
+            toggleOrientationReview(false);
+            assistantSpeak('اتفضل يا معاليك، عدل الاختيار ثم أكد الإرسال.');
+        };
+
+        window.confirmKnowledgeSubmission = async function () {
+            if (!knowledgeDraft) return;
+            await saveKnowledge(knowledgeDraft);
+
+            knowledgeDraft = null;
+            toggleKnowledgeReview(false);
+            showScreen('wait-screen');
+            assistantSpeak('ممتاز يا فندم، تم تأكيد وإرسال إجابة الفجوة المعرفية.');
+        };
+
+        window.editKnowledgeSubmission = function () {
+            toggleKnowledgeReview(false);
+            assistantSpeak('اتفضل يا معاليك، عدل الإجابة براحتك ثم أكدها.');
         };
 
         window.submitDigitalSkills = async function () {
@@ -1335,11 +1689,31 @@
             document.querySelectorAll('.skill-slider').forEach(slider => {
                 digitalSkills[slider.dataset.skill] = parseInt(slider.value);
             });
-            digitalSkills.submittedAt = Date.now();
+            digitalSkillsDraft = digitalSkills;
+            if (!requireResponseConfirmation) {
+                await saveDigitalSkills(digitalSkillsDraft);
+                digitalSkillsDraft = null;
+                showScreen('wait-screen');
+                assistantSpeak('تم إرسال تقييم المهارات مباشرة حسب إعدادات الجلسة.');
+                return;
+            }
+            renderDigitalSkillsReview(digitalSkillsDraft);
+            toggleDigitalSkillsReview(true);
+            assistantSpeak('راجع تقييم المهارات يا معالي المستشار، ثم أكد الإرسال.');
+        };
 
-            await set(ref(db, `users/${userId}/digitalSkills`), digitalSkills);
+        window.confirmDigitalSkillsSubmission = async function () {
+            if (!digitalSkillsDraft) return;
+            await saveDigitalSkills(digitalSkillsDraft);
+            digitalSkillsDraft = null;
+            toggleDigitalSkillsReview(false);
             showScreen('wait-screen');
-            assistantSpeak('تقييم المهارات اتسجل يا معالي المستشار، تسلم إيد سيادتك.');
+            assistantSpeak('تقييم المهارات اتأكد واتسجل يا فندم.');
+        };
+
+        window.editDigitalSkillsSubmission = function () {
+            toggleDigitalSkillsReview(false);
+            assistantSpeak('اتفضل يا معاليك، عدل التقييم ثم أكد الإرسال.');
         };
 
         window.toggleRaiseHand = async function () {
@@ -1399,10 +1773,37 @@
         window.submitVote = async function () {
             const selected = document.querySelector('input[name="prompt-option"]:checked');
             if (!selected) return;
+            promptDraft = parseInt(selected.value);
+            if (!requireResponseConfirmation) {
+                await savePromptVote(promptDraft);
+                promptDraft = null;
+                showScreen('wait-screen');
+                assistantSpeak('تم تسجيل التصويت مباشرة حسب إعدادات الجلسة.');
+                return;
+            }
+            const labels = {
+                1: 'الخيار 1',
+                2: 'الخيار 2',
+                3: 'الخيار 3'
+            };
+            const reviewChoice = document.getElementById('prompt-review-choice');
+            if (reviewChoice) reviewChoice.textContent = labels[promptDraft] || '-';
+            togglePromptReview(true);
+            assistantSpeak('راجع اختيارك في التصويت، ثم أكد الإرسال يا معالي المستشار.');
+        };
 
-            await set(ref(db, `users/${userId}/promptVote`), parseInt(selected.value));
+        window.confirmVoteSubmission = async function () {
+            if (!promptDraft) return;
+            await savePromptVote(promptDraft);
+            promptDraft = null;
+            togglePromptReview(false);
             showScreen('wait-screen');
-            assistantSpeak('رأي سيادتك اتسجل، شكرا يا معالي المستشار.');
+            assistantSpeak('رأي سيادتك اتأكد واتسجل بنجاح.');
+        };
+
+        window.editVoteSubmission = function () {
+            togglePromptReview(false);
+            assistantSpeak('تمام يا معاليك، ارجع عدل الاختيار ثم أكد.');
         };
 
         window.submitFeedback = async function () {
@@ -1516,6 +1917,7 @@
                     // Map step to screen
                     const screenMap = {
                         'intro': 'wait-screen',
+                        'orientation': 'orientation-screen',
                         'knowledge': 'knowledge-screen',
                         'skills': 'skills-screen',
                         'groups': 'groups-screen',
@@ -1527,6 +1929,7 @@
                     // Admin view
                     const adminScreenMap = {
                         'intro': 'admin-intro',
+                        'orientation': 'admin-orientation',
                         'knowledge': 'admin-knowledge',
                         'skills': 'admin-skills',
                         'groups': 'admin-groups',
@@ -1553,6 +1956,7 @@
 
                 // Update knowledge stats
                 updateKnowledgeStats(userList);
+                updateOrientationStats(userList);
 
                 // Update digital skills stats
                 updateDigitalSkillsStats(userList);
@@ -1665,6 +2069,32 @@
                     </div>
                 `).join('');
             }
+        }
+
+        function updateOrientationStats(users) {
+            const votes = { 1: 0, 2: 0, 3: 0 };
+            users.forEach(user => {
+                const choice = user.orientation && user.orientation.choice;
+                if (votes[choice] !== undefined) votes[choice]++;
+            });
+
+            const total = votes[1] + votes[2] + votes[3];
+            const count1 = document.getElementById('orientation1-count');
+            const count2 = document.getElementById('orientation2-count');
+            const count3 = document.getElementById('orientation3-count');
+            const bar1 = document.getElementById('orientation1-bar');
+            const bar2 = document.getElementById('orientation2-bar');
+            const bar3 = document.getElementById('orientation3-bar');
+            const totalEl = document.getElementById('orientation-total');
+            if (!count1 || !count2 || !count3 || !bar1 || !bar2 || !bar3 || !totalEl) return;
+
+            count1.textContent = votes[1];
+            count2.textContent = votes[2];
+            count3.textContent = votes[3];
+            totalEl.textContent = total;
+            bar1.style.width = total > 0 ? `${(votes[1] / total) * 100}%` : '0%';
+            bar2.style.width = total > 0 ? `${(votes[2] / total) * 100}%` : '0%';
+            bar3.style.width = total > 0 ? `${(votes[3] / total) * 100}%` : '0%';
         }
 
         function updateDigitalSkillsStats(users) {
@@ -1974,6 +2404,7 @@
         // ============================================
         function init() {
             initDigitalAssistant();
+            listenToSessionSettings();
             if (isAdmin) {
                 document.getElementById('admin-view').classList.remove('hidden');
                 initCharts();
